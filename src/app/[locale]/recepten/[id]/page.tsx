@@ -2,7 +2,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { getRecipe, estimateCost, recipes } from '@/lib/recipes';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Clock, Users, Euro, ChefHat, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Clock, Users, Euro, ChefHat, ShoppingCart, ExternalLink, Flame } from 'lucide-react';
 
 export function generateStaticParams() {
   return recipes.map((r) => ({ id: r.id }));
@@ -119,6 +119,44 @@ function RecipeDetail({ recipe }: { recipe: NonNullable<ReturnType<typeof getRec
           ))}
         </ol>
       </div>
+
+      {/* Source attribution */}
+      <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-gray-400 mb-0.5">{locale === 'nl' ? 'Bron' : 'Source'}</p>
+            <p className="text-sm font-medium text-gray-700">{recipe.source.name}</p>
+            {recipe.source.type === 'hellofresh' && (
+              <p className="text-xs text-gray-400 mt-0.5">{locale === 'nl' ? 'Geïnspireerd op HelloFresh recept, aangepast voor Lidl' : 'Inspired by HelloFresh recipe, adapted for Lidl'}</p>
+            )}
+            {recipe.source.type === 'blog' && (
+              <p className="text-xs text-gray-400 mt-0.5">{locale === 'nl' ? 'Gebaseerd op receptblog, aangepast voor Lidl' : 'Based on recipe blog, adapted for Lidl'}</p>
+            )}
+            {recipe.source.type === 'book' && (
+              <p className="text-xs text-gray-400 mt-0.5">{locale === 'nl' ? 'Geïnspireerd op kookboek' : 'Inspired by cookbook'}</p>
+            )}
+          </div>
+          {recipe.source.url && (
+            <a
+              href={recipe.source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+            >
+              {locale === 'nl' ? 'Origineel' : 'Original'}
+              <ExternalLink size={12} />
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* Calories if available */}
+      {recipe.calories_per_serving && (
+        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+          <Flame size={16} className="text-orange-500" />
+          <span>~{recipe.calories_per_serving} kcal {t('perPerson')}</span>
+        </div>
+      )}
 
       {/* Add to plan button */}
       <button className="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors flex items-center justify-center gap-2">

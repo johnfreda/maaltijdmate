@@ -1,7 +1,7 @@
 import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Link } from '@/i18n/navigation';
-import { Search, Clock, Users, Euro } from 'lucide-react';
+import { Search, Clock, Users, Euro, Flame } from 'lucide-react';
 import { recipes, estimateCost } from '@/lib/recipes';
 
 export default function RecipesPage() {
@@ -51,8 +51,11 @@ export default function RecipesPage() {
               href={`/recepten/${recipe.id}`}
               className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
             >
-              <div className="h-28 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-4xl">
+              <div className="h-28 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-4xl relative">
                 {recipe.emoji}
+                {recipe.source.type === 'hellofresh' && (
+                  <span className="absolute top-2 right-2 text-[8px] font-bold bg-green-600 text-white px-1.5 py-0.5 rounded-full">HF</span>
+                )}
               </div>
               <div className="p-3">
                 <h3 className="font-semibold text-sm mb-1">{title}</h3>
