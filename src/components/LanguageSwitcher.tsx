@@ -13,10 +13,12 @@ export function LanguageSwitcher() {
   return (
     <button
       onClick={() => router.replace(pathname, { locale: switchTo })}
-      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+      className="p-2 rounded-xl hover:bg-gray-100 transition-premium group"
+      title={`Switch to ${switchTo === 'en' ? 'English' : 'Nederlands'}`}
     >
-      <span>{switchTo === 'en' ? '🇬🇧' : '🇳🇱'}</span>
-      <span className="uppercase">{switchTo}</span>
+      <span className="text-2xl group-hover:scale-110 transition-transform block">
+        {switchTo === 'en' ? '🇬🇧' : '🇳🇱'}
+      </span>
     </button>
   );
 }

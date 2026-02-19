@@ -16,25 +16,47 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-bottom">
-      <div className="flex items-center justify-around max-w-lg mx-auto h-16">
-        {navItems.map(({ href, icon: Icon, labelKey }) => {
-          const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors ${
-                isActive
-                  ? 'text-green-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-              <span className="text-[10px] font-medium">{t(labelKey)}</span>
-            </Link>
-          );
-        })}
+    <nav className="fixed bottom-0 left-0 right-0 z-50">
+      <div className="glass border-t border-white/20 safe-area-bottom">
+        <div className="flex items-center justify-around max-w-lg mx-auto px-6 py-3">
+          {navItems.map(({ href, icon: Icon, labelKey }) => {
+            const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
+            return (
+              <Link
+                key={href}
+                href={href}
+                className="relative flex flex-col items-center gap-1.5 px-4 py-2 transition-premium group"
+              >
+                {/* Active indicator pill */}
+                {isActive && (
+                  <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-md" />
+                )}
+                
+                {/* Icon with active state */}
+                <div className={`p-1.5 rounded-xl transition-premium ${
+                  isActive
+                    ? 'bg-green-50 text-green-600'
+                    : 'text-gray-600 group-hover:text-green-500 group-hover:bg-gray-50'
+                }`}>
+                  <Icon 
+                    size={24} 
+                    strokeWidth={isActive ? 2.5 : 2}
+                    className="transition-premium"
+                  />
+                </div>
+                
+                {/* Label */}
+                <span className={`text-xs font-medium transition-premium text-premium ${
+                  isActive
+                    ? 'text-green-600'
+                    : 'text-gray-500 group-hover:text-green-500'
+                }`}>
+                  {t(labelKey)}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );
