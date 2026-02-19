@@ -1,54 +1,13 @@
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { Search, Filter, Clock, Users, ChefHat } from 'lucide-react';
-
-// Placeholder recipes for demo
-const demoRecipes = [
-  {
-    id: '1',
-    title: { nl: 'Sabich', en: 'Sabich' },
-    description: { nl: 'Israelisch straateten met aubergine, ei en tahini', en: 'Israeli street food with eggplant, egg and tahini' },
-    prepTime: 35,
-    servings: 4,
-    difficulty: 'easy',
-    tags: ['vegetarian', 'budget'],
-    image: '🍆',
-  },
-  {
-    id: '2',
-    title: { nl: 'Pad Thai', en: 'Pad Thai' },
-    description: { nl: 'Thaise roerbaknoedels met garnalen en pinda\'s', en: 'Thai stir-fried noodles with shrimp and peanuts' },
-    prepTime: 25,
-    servings: 2,
-    difficulty: 'medium',
-    tags: ['quick'],
-    image: '🍜',
-  },
-  {
-    id: '3',
-    title: { nl: 'Shakshuka', en: 'Shakshuka' },
-    description: { nl: 'Gepocheerde eieren in pittige tomatensaus', en: 'Poached eggs in spicy tomato sauce' },
-    prepTime: 30,
-    servings: 3,
-    difficulty: 'easy',
-    tags: ['vegetarian', 'budget', 'quick'],
-    image: '🍳',
-  },
-  {
-    id: '4',
-    title: { nl: 'Pasta Carbonara', en: 'Pasta Carbonara' },
-    description: { nl: 'Romige Italiaanse pasta met spek en ei', en: 'Creamy Italian pasta with bacon and egg' },
-    prepTime: 20,
-    servings: 4,
-    difficulty: 'easy',
-    tags: ['quick'],
-    image: '🍝',
-  },
-];
+import { Link } from '@/i18n/navigation';
+import { Search, Clock, Users, Euro } from 'lucide-react';
+import { recipes, estimateCost } from '@/lib/recipes';
 
 export default function RecipesPage() {
   const t = useTranslations('recipes');
   const tc = useTranslations('common');
+  const locale = useLocale();
 
   return (
     <div className="max-w-lg mx-auto px-4">
@@ -81,30 +40,43 @@ export default function RecipesPage() {
 
       {/* Recipe grid */}
       <div className="grid grid-cols-2 gap-3">
-        {demoRecipes.map((recipe) => (
-          <div
-            key={recipe.id}
-            className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-          >
-            <div className="h-28 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-4xl">
-              {recipe.image}
-            </div>
-            <div className="p-3">
-              <h3 className="font-semibold text-sm mb-1">{recipe.title.nl}</h3>
-              <p className="text-xs text-gray-500 line-clamp-2 mb-2">{recipe.description.nl}</p>
-              <div className="flex items-center gap-3 text-xs text-gray-400">
-                <span className="flex items-center gap-1">
-                  <Clock size={12} />
-                  {recipe.prepTime} {tc('minutes')}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Users size={12} />
-                  {recipe.servings}
-                </span>
+        {recipes.map((recipe) => {
+          const title = locale === 'nl' ? recipe.title_nl : recipe.title_en;
+          const desc = locale === 'nl' ? recipe.description_nl : recipe.description_en;
+          const cost = estimateCost(recipe);
+
+          return (
+            <Link
+              key={recipe.id}
+              href={`/recepten/${recipe.id}`}
+              className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+            >
+              <div className="h-28 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-4xl">
+                {recipe.emoji}
               </div>
-            </div>
-          </div>
-        ))}
+              <div className="p-3">
+                <h3 className="font-semibold text-sm mb-1">{title}</h3>
+                <p className="text-xs text-gray-500 line-clamp-2 mb-2">{desc}</p>
+                <div className="flex items-center gap-3 text-xs text-gray-400">
+                  <span className="flex items-center gap-1">
+                    <Clock size={12} />
+                    {recipe.prep_time}′
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users size={12} />
+                    {recipe.servings}
+                  </span>
+                  {cost > 0 && (
+                    <span className="flex items-center gap-0.5 text-green-600 font-medium">
+                      <Euro size={12} />
+                      {cost.toFixed(2)}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
