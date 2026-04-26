@@ -6,27 +6,67 @@ export type Weekday = (typeof weekdays)[number];
 
 export type PlannerState = {
   people: number;
-  shoppingMoment: string;
-  assignments: Partial<Record<Weekday, string>>;
-  checkedItems: string[];
+  currentWeekKey: string;
+  assignmentsByWeek: Record<string, Partial<Record<Weekday, string>>>;
+  shoppingMomentByWeek: Record<string, string>;
+  checkedItemsByWeek: Record<string, string[]>;
 };
+
+export function getWeekKeyFromDate(date: Date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+}
 
 export const defaultPlannerState: PlannerState = {
   people: 2,
-  shoppingMoment: '',
-  assignments: {},
-  checkedItems: [],
+  currentWeekKey: getWeekKeyFromDate(new Date()),
+  assignmentsByWeek: {},
+  shoppingMomentByWeek: {},
+  checkedItemsByWeek: {},
 };
 
 export function getRecipeById(id?: string) {
   return bioRecipes.find((r) => r.id === id);
 }
 
-export function aggregateShoppingList(state: PlannerState) {
+function parseWeekKey(weekKey: string) {
+  const [yearPart, weekPart] = weekKey.split('-W');
+  return { year: Number(yearPart), week: Number(weekPart) };
+}
+
+function getMondayOfISOWeek(year: number, week: number) {
+  const simple = new Date(Date.UTC(year, 0, 1 + (week - 1) * 7));
+  const dayOfWeek = simple.getUTCDay() || 7;
+  if (dayOfWeek <= 4) {
+    simple.setUTCDate(simple.getUTCDate() - dayOfWeek + 1);
+  } else {
+    simple.setUTCDate(simple.getUTCDate() + 8 - dayOfWeek);
+  }
+  return simple;
+}
+
+export function getWeekLabel(weekKey: string) {
+  const { year, week } = parseWeekKey(weekKey);
+  return `Week ${week}, ${year}`;
+}
+
+export function addWeeks(weekKey: string, delta: number) {
+  const { year, week } = parseWeekKey(weekKey);
+  const monday = getMondayOfISOWeek(year, week);
+  monday.setUTCDate(monday.getUTCDate() + delta * 7);
+  return getWeekKeyFromDate(monday);
+}
+
+export function aggregateShoppingList(state: PlannerState, weekKey: string) {
+  const assignments = state.assignmentsByWeek[weekKey] ?? {};
   const map = new Map<string, { unit: string; amount: number }>();
 
   for (const day of weekdays) {
-    const recipe = getRecipeById(state.assignments[day]);
+    const recipe = getRecipeById(assignments[day]);
     if (!recipe) continue;
 
     for (const ingredient of recipe.ingredients) {
@@ -62,49 +102,58 @@ function escapeText(text: string) {
   return text.replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n');
 }
 
-export function generateIcs(state: PlannerState) {
+function generateEventsForWeek(state: PlannerState, weekKey: string) {
   const now = formatIcsDate(new Date().toISOString());
+  const assignments = state.assignmentsByWeek[weekKey] ?? {};
   const events: string[] = [];
 
+  const { year, week } = parseWeekKey(weekKey);
+  const monday = getMondayOfISOWeek(year, week);
+
   weekdays.forEach((day, index) => {
-    const recipe = getRecipeById(state.assignments[day]);
+    const recipe = getRecipeById(assignments[day]);
     if (!recipe) return;
 
-    const start = new Date();
-    start.setDate(start.getDate() - start.getDay() + 1 + index);
-    start.setHours(18, 0, 0, 0);
+    const start = new Date(monday);
+    start.setUTCDate(monday.getUTCDate() + index);
+    start.setUTCHours(17, 0, 0, 0);
     const end = new Date(start);
-    end.setHours(19, 0, 0, 0);
+    end.setUTCHours(18, 0, 0, 0);
 
     events.push([
       'BEGIN:VEVENT',
-      `UID:meal-${day.toLowerCase()}-${recipe.id}@maaltijdmate`,
+      `UID:meal-${weekKey}-${day.toLowerCase()}-${recipe.id}@maaltijdmate`,
       `DTSTAMP:${now}`,
       `DTSTART:${formatIcsDate(start.toISOString())}`,
       `DTEND:${formatIcsDate(end.toISOString())}`,
       `SUMMARY:${escapeText(`Weekmenu: ${recipe.title}`)}`,
-      `DESCRIPTION:${escapeText(`${day} • ${state.people} personen`)}`,
+      `DESCRIPTION:${escapeText(`${day} • ${state.people} personen • ${weekKey}`)}`,
       'END:VEVENT',
     ].join('\n'));
   });
 
-  if (state.shoppingMoment) {
-    const start = new Date(state.shoppingMoment);
+  const shoppingMoment = state.shoppingMomentByWeek[weekKey];
+  if (shoppingMoment) {
+    const start = new Date(shoppingMoment);
     const end = new Date(start);
     end.setHours(end.getHours() + 1);
 
     events.push([
       'BEGIN:VEVENT',
-      'UID:shopping-moment@maaltijdmate',
+      `UID:shopping-moment-${weekKey}@maaltijdmate`,
       `DTSTAMP:${now}`,
       `DTSTART:${formatIcsDate(start.toISOString())}`,
       `DTEND:${formatIcsDate(end.toISOString())}`,
       'SUMMARY:Boodschappenmoment',
-      'DESCRIPTION:Bio Weekplanner boodschappen voor de week',
+      `DESCRIPTION:${escapeText(`Bio Weekplanner boodschappen • ${weekKey}`)}`,
       'END:VEVENT',
     ].join('\n'));
   }
 
+  return events;
+}
+
+function toCalendar(events: string[]) {
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -113,4 +162,20 @@ export function generateIcs(state: PlannerState) {
     ...events,
     'END:VCALENDAR',
   ].join('\n');
+}
+
+export function generateIcsForWeek(state: PlannerState, weekKey: string) {
+  return toCalendar(generateEventsForWeek(state, weekKey));
+}
+
+export function generateIcsForAll(state: PlannerState) {
+  const allWeekKeys = Array.from(
+    new Set([
+      ...Object.keys(state.assignmentsByWeek),
+      ...Object.keys(state.shoppingMomentByWeek),
+    ]),
+  ).sort();
+
+  const events = allWeekKeys.flatMap((weekKey) => generateEventsForWeek(state, weekKey));
+  return toCalendar(events);
 }

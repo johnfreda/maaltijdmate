@@ -1,5 +1,6 @@
 'use client';
 
+import { getWeekLabel } from '@/lib/planner';
 import { usePlannerState } from '@/lib/usePlannerState';
 
 function getCategory(name: string) {
@@ -10,7 +11,15 @@ function getCategory(name: string) {
 }
 
 export default function ShoppingPage() {
-  const { state, patch, shoppingList, isReady } = usePlannerState();
+  const {
+    isReady,
+    selectedWeekKey,
+    shoppingList,
+    checkedItems,
+    toggleCheckedItem,
+    resetCheckedItems,
+    stepWeek,
+  } = usePlannerState();
 
   if (!isReady) return <div className="p-6">Laden...</div>;
 
@@ -20,19 +29,17 @@ export default function ShoppingPage() {
     return acc;
   }, {});
 
-  const checkedCount = state.checkedItems.length;
+  const checkedCount = checkedItems.length;
 
   return (
     <div className="mx-auto max-w-6xl p-4 sm:p-6">
       <h1 className="display-serif text-4xl leading-tight sm:text-5xl">Grocery List</h1>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[#50564f]">
-        <p>Prepared for this week. {checkedCount}/{shoppingList.length} afgevinkt.</p>
-        <button
-          onClick={() => patch({ checkedItems: [] })}
-          className="rounded-xl border border-[#d5d5ce] bg-[#f8f8f3] px-3 py-1.5 text-xs"
-        >
-          Reset checks
-        </button>
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-[#50564f]">
+        <button onClick={() => stepWeek(-1)} className="rounded-lg border border-[#d5d5ce] px-2 py-1 text-xs">←</button>
+        <span className="rounded-lg bg-[#eef2e8] px-2 py-1 text-xs font-medium">{getWeekLabel(selectedWeekKey)}</span>
+        <button onClick={() => stepWeek(1)} className="rounded-lg border border-[#d5d5ce] px-2 py-1 text-xs">→</button>
+        <p className="ml-1">{checkedCount}/{shoppingList.length} afgevinkt.</p>
+        <button onClick={resetCheckedItems} className="rounded-xl border border-[#d5d5ce] bg-[#f8f8f3] px-3 py-1.5 text-xs">Reset checks</button>
       </div>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-2">
@@ -41,19 +48,14 @@ export default function ShoppingPage() {
             <p className="inline-flex rounded-full bg-[#eef2e7] px-3 py-1 text-sm text-[#435040]">{category}</p>
             <ul className="mt-4 space-y-3">
               {items.map((item) => {
-                const isChecked = state.checkedItems.includes(item.key);
+                const isChecked = checkedItems.includes(item.key);
                 return (
                   <li key={item.key} className="flex items-start justify-between gap-3 text-sm">
                     <label className="flex items-start gap-3">
                       <input
                         type="checkbox"
                         checked={isChecked}
-                        onChange={(e) => {
-                          const next = e.target.checked
-                            ? [...state.checkedItems, item.key]
-                            : state.checkedItems.filter((key) => key !== item.key);
-                          patch({ checkedItems: next });
-                        }}
+                        onChange={(e) => toggleCheckedItem(item.key, e.target.checked)}
                         className="mt-1"
                       />
                       <span className={isChecked ? 'line-through text-[#a0a39a]' : ''}>{item.name}</span>

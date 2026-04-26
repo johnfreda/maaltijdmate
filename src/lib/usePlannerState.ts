@@ -1,9 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { defaultPlannerState, type PlannerState, aggregateShoppingList } from './planner';
+import {
+  addWeeks,
+  aggregateShoppingList,
+  defaultPlannerState,
+  type PlannerState,
+} from './planner';
 
-const STORAGE_KEY = 'bio-weekplanner-state-v1';
+const STORAGE_KEY = 'bio-weekplanner-state-v2';
 
 export function usePlannerState() {
   const [state, setState] = useState<PlannerState>(defaultPlannerState);
@@ -28,11 +33,117 @@ export function usePlannerState() {
   }
 
   function patch(partial: Partial<PlannerState>) {
-    const next = { ...state, ...partial };
-    update(next);
+    update({ ...state, ...partial });
   }
 
-  const shoppingList = useMemo(() => aggregateShoppingList(state), [state]);
+  const selectedWeekKey = state.currentWeekKey;
+  const weekAssignments = state.assignmentsByWeek[selectedWeekKey] ?? {};
+  const checkedItems = state.checkedItemsByWeek[selectedWeekKey] ?? [];
+  const shoppingMoment = state.shoppingMomentByWeek[selectedWeekKey] ?? '';
 
-  return { state, isReady, patch, update, shoppingList };
+  function setCurrentWeekKey(weekKey: string) {
+    patch({ currentWeekKey: weekKey });
+  }
+
+  function stepWeek(delta: number) {
+    patch({ currentWeekKey: addWeeks(selectedWeekKey, delta) });
+  }
+
+  function setPeople(people: number) {
+    patch({ people: Math.max(1, people) });
+  }
+
+  function setAssignment(day: keyof typeof weekAssignments | string, recipeId?: string) {
+    const nextWeekAssignments = {
+      ...weekAssignments,
+      [day]: recipeId || undefined,
+    };
+
+    patch({
+      assignmentsByWeek: {
+        ...state.assignmentsByWeek,
+        [selectedWeekKey]: nextWeekAssignments,
+      },
+    });
+  }
+
+  function setAssignments(assignments: Record<string, string | undefined>) {
+    patch({
+      assignmentsByWeek: {
+        ...state.assignmentsByWeek,
+        [selectedWeekKey]: assignments,
+      },
+    });
+  }
+
+  function clearSelectedWeek() {
+    patch({
+      assignmentsByWeek: {
+        ...state.assignmentsByWeek,
+        [selectedWeekKey]: {},
+      },
+      checkedItemsByWeek: {
+        ...state.checkedItemsByWeek,
+        [selectedWeekKey]: [],
+      },
+      shoppingMomentByWeek: {
+        ...state.shoppingMomentByWeek,
+        [selectedWeekKey]: '',
+      },
+    });
+  }
+
+  function setShoppingMoment(value: string) {
+    patch({
+      shoppingMomentByWeek: {
+        ...state.shoppingMomentByWeek,
+        [selectedWeekKey]: value,
+      },
+    });
+  }
+
+  function toggleCheckedItem(itemKey: string, isChecked: boolean) {
+    const next = isChecked
+      ? [...checkedItems, itemKey]
+      : checkedItems.filter((k) => k !== itemKey);
+
+    patch({
+      checkedItemsByWeek: {
+        ...state.checkedItemsByWeek,
+        [selectedWeekKey]: next,
+      },
+    });
+  }
+
+  function resetCheckedItems() {
+    patch({
+      checkedItemsByWeek: {
+        ...state.checkedItemsByWeek,
+        [selectedWeekKey]: [],
+      },
+    });
+  }
+
+  const shoppingList = useMemo(() => aggregateShoppingList(state, selectedWeekKey), [state, selectedWeekKey]);
+
+  return {
+    state,
+    isReady,
+    patch,
+    update,
+    selectedWeekKey,
+    weekAssignments,
+    checkedItems,
+    shoppingMoment,
+    shoppingList,
+    setCurrentWeekKey,
+    stepWeek,
+    setPeople,
+    setAssignment,
+    setAssignments,
+    clearSelectedWeek,
+    setShoppingMoment,
+    toggleCheckedItem,
+    resetCheckedItems,
+  };
 }
