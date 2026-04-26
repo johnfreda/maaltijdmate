@@ -37,11 +37,11 @@ export default function AgendaPage() {
 
   return (
     <div className="mx-auto max-w-4xl p-4 sm:p-6">
-      <h1 className="font-serif text-4xl leading-tight sm:text-5xl">System Settings</h1>
+      <h1 className="display-serif text-4xl leading-tight sm:text-5xl">System Settings</h1>
       <p className="mt-3 text-[#50564f]">Stel je boodschappenmoment in en sync je weekmenu via iCal.</p>
 
       <section className="mt-6 rounded-2xl border border-[#d6ddc8] bg-[#dfe8cf] p-5">
-        <h2 className="font-serif text-3xl">iCal Sync</h2>
+        <h2 className="display-serif text-3xl">iCal Sync</h2>
         <p className="mt-2 text-sm text-[#4d584a]">Gebruik de feed-link of download een kalenderbestand.</p>
 
         <label className="mt-4 block text-sm font-medium">Boodschappenmoment</label>

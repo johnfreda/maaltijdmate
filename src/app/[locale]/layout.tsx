@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { NextIntlClientProvider, useMessages } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { Inter } from 'next/font/google';
+import { Inter, Playfair_Display } from 'next/font/google';
 import '../globals.css';
 import { BottomNav } from '@/components/BottomNav';
 import { AppShell } from '@/components/AppShell';
 
 const inter = Inter({ subsets: ['latin'] });
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-display' });
 
 export const metadata: Metadata = {
   title: 'MaaltijdMate',
@@ -28,7 +29,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${inter.className} ${playfair.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <AppShell>
             {children}

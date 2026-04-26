@@ -11,19 +11,29 @@ export default function WeekPlanPage() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 sm:p-6">
-      <h1 className="font-serif text-4xl leading-tight sm:text-5xl">Weekly Canvas</h1>
+      <h1 className="display-serif text-4xl leading-tight sm:text-5xl">Weekly Canvas</h1>
       <p className="mt-3 text-[#50564f]">Plan je week met rust. Eén gerecht per dag, zonder ruis.</p>
 
       <div className="mt-5 rounded-2xl border border-[#deddd6] bg-white p-4 sm:p-5">
-        <label className="text-sm font-medium">Aantal personen</label>
-        <input
-          type="number"
-          min={1}
-          max={8}
-          value={state.people}
-          onChange={(e) => patch({ people: Number(e.target.value) || 1 })}
-          className="mt-1 w-28 rounded-xl border border-[#dbdbd2] bg-[#fafaf6] px-3 py-2"
-        />
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <label className="text-sm font-medium">Aantal personen</label>
+            <input
+              type="number"
+              min={1}
+              max={8}
+              value={state.people}
+              onChange={(e) => patch({ people: Number(e.target.value) || 1 })}
+              className="mt-1 block w-28 rounded-xl border border-[#dbdbd2] bg-[#fafaf6] px-3 py-2"
+            />
+          </div>
+          <button
+            onClick={() => patch({ assignments: {}, checkedItems: [] })}
+            className="rounded-xl border border-[#d5d5ce] bg-[#f8f8f3] px-3 py-2 text-xs text-[#50564f]"
+          >
+            Leeg weekplan
+          </button>
+        </div>
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

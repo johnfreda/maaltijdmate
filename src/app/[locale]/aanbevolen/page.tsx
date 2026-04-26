@@ -11,7 +11,7 @@ export default function AanbevolenPage() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 sm:p-6">
-      <h1 className="font-serif text-4xl leading-tight sm:text-5xl">Recipe Library</h1>
+      <h1 className="display-serif text-4xl leading-tight sm:text-5xl">Recipe Library</h1>
       <p className="mt-3 max-w-2xl text-[#50564f]">Wekelijkse bio-aanbevelingen. Koppel direct een recept aan een weekdag.</p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

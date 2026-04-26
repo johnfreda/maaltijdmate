@@ -24,8 +24,16 @@ export default function ShoppingPage() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 sm:p-6">
-      <h1 className="font-serif text-4xl leading-tight sm:text-5xl">Grocery List</h1>
-      <p className="mt-3 text-[#50564f]">Prepared for this week. {checkedCount}/{shoppingList.length} afgevinkt.</p>
+      <h1 className="display-serif text-4xl leading-tight sm:text-5xl">Grocery List</h1>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[#50564f]">
+        <p>Prepared for this week. {checkedCount}/{shoppingList.length} afgevinkt.</p>
+        <button
+          onClick={() => patch({ checkedItems: [] })}
+          className="rounded-xl border border-[#d5d5ce] bg-[#f8f8f3] px-3 py-1.5 text-xs"
+        >
+          Reset checks
+        </button>
+      </div>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-2">
         {Object.entries(grouped).map(([category, items]) => (
