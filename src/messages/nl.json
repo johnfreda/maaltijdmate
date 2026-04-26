@@ -1,9 +1,109 @@
 {
   "common": {
     "home": "Home",
-    "recommended": "Bio",
+    "recommended": "Recepten",
     "weekPlan": "Week",
     "shoppingList": "Lijst",
     "agenda": "Agenda"
+  },
+  "shell": {
+    "brand": "Curator Kitchen",
+    "product": "Plated",
+    "planBadge": "Premium Plan",
+    "createPlan": "Nieuw weekplan",
+    "planWeek": "Plan week",
+    "helpCenter": "Helpcenter",
+    "searchPlaceholder": "Zoeken...",
+    "nav": {
+      "weekplan": "Weekplanner",
+      "recipes": "Recepten",
+      "grocery": "Boodschappen",
+      "settings": "Instellingen"
+    }
+  },
+  "home": {
+    "title": "Bio Weekplanner",
+    "subtitle": "Een rustige, functionele planningstool die kiezen, structureren en voorbereiden uit handen neemt.",
+    "cards": {
+      "weeklyCanvas": {
+        "title": "Weekly Canvas",
+        "text": "Koppel recepten aan je weekdagen met één heldere planning."
+      },
+      "recipeLibrary": {
+        "title": "Recipe Library",
+        "text": "Ontdek aanbevolen bio recepten en plan direct door."
+      },
+      "distilledGroceries": {
+        "title": "Distilled Groceries",
+        "text": "Automatische gecombineerde lijst met afvinkfunctie."
+      },
+      "icalSync": {
+        "title": "iCal Sync",
+        "text": "Stel een boodschappenmoment in en exporteer je agenda."
+      }
+    }
+  },
+  "weekplan": {
+    "loading": "Laden...",
+    "title": "Weekly Canvas",
+    "subtitle": "Plan vooruit per week — onbeperkt jaren vooruit.",
+    "people": "Aantal personen",
+    "clearWeek": "Leeg deze week",
+    "pickRecipe": "Kies recept",
+    "minutes": "min",
+    "persons": "personen",
+    "emptyDay": "Nog niets gepland",
+    "days": {
+      "Maandag": "Maandag",
+      "Dinsdag": "Dinsdag",
+      "Woensdag": "Woensdag",
+      "Donderdag": "Donderdag",
+      "Vrijdag": "Vrijdag",
+      "Zaterdag": "Zaterdag",
+      "Zondag": "Zondag"
+    }
+  },
+  "recommended": {
+    "loading": "Laden...",
+    "title": "Recipe Library",
+    "subtitle": "Koppel recepten direct aan je vooruitplanning.",
+    "minutesPrep": "min prep",
+    "bioTag": "Bio",
+    "assignToDay": "Koppel aan dag",
+    "notPlanned": "Niet ingepland",
+    "days": {
+      "Maandag": "Maandag",
+      "Dinsdag": "Dinsdag",
+      "Woensdag": "Woensdag",
+      "Donderdag": "Donderdag",
+      "Vrijdag": "Vrijdag",
+      "Zaterdag": "Zaterdag",
+      "Zondag": "Zondag"
+    }
+  },
+  "shopping": {
+    "loading": "Laden...",
+    "title": "Grocery List",
+    "checkedProgress": "{checked}/{total} afgevinkt.",
+    "resetChecks": "Reset checks",
+    "empty": "Nog leeg: plan eerst je weekmenu.",
+    "categories": {
+      "produce": "Groente & fruit",
+      "pantry": "Voorraadkast",
+      "dairyProtein": "Zuivel & eiwit"
+    }
+  },
+  "agenda": {
+    "loading": "Laden...",
+    "title": "System Settings",
+    "syncTitle": "iCal Sync",
+    "syncSubtitle": "Exporteer alleen deze week of je volledige meerjarenplanning.",
+    "shoppingMoment": "Boodschappenmoment (deze week)",
+    "weekFeed": "Feed URL (deze week)",
+    "allFeed": "Feed URL (alle geplande weken)",
+    "copy": "Kopieer",
+    "copied": "Gekopieerd",
+    "downloadWeek": "Download week .ics",
+    "downloadAll": "Download alles .ics"
   }
 }

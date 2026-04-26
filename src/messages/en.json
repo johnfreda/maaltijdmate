@@ -1,9 +1,109 @@
 {
   "common": {
     "home": "Home",
-    "recommended": "Bio",
+    "recommended": "Recipes",
     "weekPlan": "Week",
     "shoppingList": "List",
     "agenda": "Agenda"
+  },
+  "shell": {
+    "brand": "Curator Kitchen",
+    "product": "Plated",
+    "planBadge": "Premium Plan",
+    "createPlan": "Create New Plan",
+    "planWeek": "Plan week",
+    "helpCenter": "Help Center",
+    "searchPlaceholder": "Search...",
+    "nav": {
+      "weekplan": "Weekly Plan",
+      "recipes": "Recipes",
+      "grocery": "Grocery List",
+      "settings": "Settings"
+    }
+  },
+  "home": {
+    "title": "Bio Week Planner",
+    "subtitle": "A calm planning tool that removes the mental load of choosing, structuring and preparing meals.",
+    "cards": {
+      "weeklyCanvas": {
+        "title": "Weekly Canvas",
+        "text": "Assign recipes to weekdays in one clear planning flow."
+      },
+      "recipeLibrary": {
+        "title": "Recipe Library",
+        "text": "Discover recommended bio recipes and plan instantly."
+      },
+      "distilledGroceries": {
+        "title": "Distilled Groceries",
+        "text": "Auto-combined grocery list with checkboxes."
+      },
+      "icalSync": {
+        "title": "iCal Sync",
+        "text": "Set shopping moments and export to calendar."
+      }
+    }
+  },
+  "weekplan": {
+    "loading": "Loading...",
+    "title": "Weekly Canvas",
+    "subtitle": "Plan ahead by week — unlimited years ahead.",
+    "people": "People",
+    "clearWeek": "Clear this week",
+    "pickRecipe": "Pick recipe",
+    "minutes": "min",
+    "persons": "people",
+    "emptyDay": "Nothing planned yet",
+    "days": {
+      "Maandag": "Monday",
+      "Dinsdag": "Tuesday",
+      "Woensdag": "Wednesday",
+      "Donderdag": "Thursday",
+      "Vrijdag": "Friday",
+      "Zaterdag": "Saturday",
+      "Zondag": "Sunday"
+    }
+  },
+  "recommended": {
+    "loading": "Loading...",
+    "title": "Recipe Library",
+    "subtitle": "Assign recipes directly to your forward planning.",
+    "minutesPrep": "min prep",
+    "bioTag": "Bio",
+    "assignToDay": "Assign to day",
+    "notPlanned": "Not planned",
+    "days": {
+      "Maandag": "Monday",
+      "Dinsdag": "Tuesday",
+      "Woensdag": "Wednesday",
+      "Donderdag": "Thursday",
+      "Vrijdag": "Friday",
+      "Zaterdag": "Saturday",
+      "Zondag": "Sunday"
+    }
+  },
+  "shopping": {
+    "loading": "Loading...",
+    "title": "Grocery List",
+    "checkedProgress": "{checked}/{total} checked.",
+    "resetChecks": "Reset checks",
+    "empty": "Empty for now: first plan your week menu.",
+    "categories": {
+      "produce": "Produce",
+      "pantry": "Pantry",
+      "dairyProtein": "Dairy & Protein"
+    }
+  },
+  "agenda": {
+    "loading": "Loading...",
+    "title": "System Settings",
+    "syncTitle": "iCal Sync",
+    "syncSubtitle": "Export this week only, or your full multi-year plan.",
+    "shoppingMoment": "Shopping moment (this week)",
+    "weekFeed": "Feed URL (this week)",
+    "allFeed": "Feed URL (all planned weeks)",
+    "copy": "Copy",
+    "copied": "Copied",
+    "downloadWeek": "Download week .ics",
+    "downloadAll": "Download all .ics"
   }
 }
