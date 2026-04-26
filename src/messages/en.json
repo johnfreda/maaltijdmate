@@ -1,20 +1,9 @@
 {
   "common": {
     "home": "Home",
-    "recipes": "Recipes",
-    "weekPlan": "Week plan",
-    "shoppingList": "Shopping"
-  },
-  "home": {
-    "title": "MaaltijdMate v2",
-    "subtitle": "Clean restart with a clear MVP foundation.",
-    "recipesTitle": "Recipes",
-    "recipesText": "Seed recipes now, Supabase CRUD next.",
-    "weekPlanTitle": "Week plan",
-    "weekPlanText": "One meal per day, later drag & drop and smart suggestions.",
-    "shoppingTitle": "Shopping list",
-    "shoppingText": "Auto-generated from your week plan.",
-    "authTitle": "Auth",
-    "authText": "Supabase login baseline, then register + reset."
+    "recommended": "Bio",
+    "weekPlan": "Week",
+    "shoppingList": "List",
+    "agenda": "Agenda"
   }
 }

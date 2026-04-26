@@ -1,39 +1,37 @@
-# MaaltijdMate (Rebuild v2)
+# Bio Weekplanner (MaaltijdMate pivot)
 
-Clean MVP restart for **Maaltijd Week Studio**.
+Mobile-first prototype focused on **mentale ontlasting**:
+- kies aanbevolen bio/gezonde recepten
+- koppel aan weekdagen
+- stel aantal personen in
+- krijg automatisch een gecombineerde boodschappenlijst
+- vink boodschappen af
+- plan boodschappenmoment
+- exporteer weekmenu + boodschappenmoment als `.ics`
 
 ## Stack
-- Next.js 16 (App Router)
-- TypeScript
+- Next.js 16 + TypeScript
 - Tailwind CSS
 - next-intl (NL/EN)
-- Supabase (auth + data)
+- LocalStorage state for MVP persistence
 
-## What is in v2 now
-- Home dashboard with clear modules
-- Recipes page (seed data)
-- Week plan page (seed template)
-- Shopping list generated from week plan
-- Auth baseline page (`/[locale]/auth`) with Supabase sign-in
-- Supabase SQL schema in `supabase/schema.sql`
+## Routes (MVP milestone)
+- `/[locale]/aanbevolen` — aanbevolen bio recepten
+- `/[locale]/weekplan` — recept aan dag koppelen + personen
+- `/[locale]/boodschappen` — automatische afvinkbare lijst
+- `/[locale]/agenda` — boodschappenmoment + iCal export
 
-## Local setup
+## Run
 ```bash
 npm install
-cp .env.example .env.local
 npm run dev
+npm run build
 ```
 
-## Environment
-Create `.env.local` with:
-
-```bash
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-```
-
-## Next milestone
-- Registration + password reset
-- Persist recipes/week plan in Supabase
-- User onboarding
-- Vercel production deploy
+## Not in MVP
+- supermarktbestellingen
+- prijsvergelijking
+- voorraadkast complexiteit
+- voedingswaarden
+- native app
+- AI-chat interface
