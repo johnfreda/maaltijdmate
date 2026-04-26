@@ -1,555 +1,119 @@
-// Local recipe data - will be replaced by Supabase queries later
-// This mirrors the seed.sql data structure
-
-export interface Ingredient {
-  id: string;
-  name_nl: string;
-  name_en: string;
-  category: string;
-  unit: string;
-  lidl_name?: string;
-  lidl_price?: number;
-  lidl_unit_size?: string;
-  is_common?: boolean;
-}
-
-export interface RecipeIngredient {
-  ingredient: Ingredient;
-  amount: number;
-  unit: string;
-  notes_nl?: string;
-  notes_en?: string;
-  optional?: boolean;
-}
-
-export interface RecipeSource {
+export type Ingredient = {
   name: string;
-  url?: string;
-  type: 'hellofresh' | 'traditional' | 'blog' | 'book' | 'original';
-}
+  amount: string;
+};
 
-export interface Recipe {
+export type Recipe = {
   id: string;
-  title_nl: string;
-  title_en: string;
-  description_nl: string;
-  description_en: string;
-  prep_time: number;
+  title: string;
+  description: string;
+  prepMinutes: number;
   servings: number;
-  difficulty: 'easy' | 'medium' | 'hard';
-  image_url?: string;
-  emoji: string;
-  source: RecipeSource;
   tags: string[];
-  calories_per_serving?: number;
-  steps_nl: string[];
-  steps_en: string[];
-  ingredients: RecipeIngredient[];
-}
-
-// Ingredient database
-const ingredients: Record<string, Ingredient> = {
-  aubergine: { id: '1', name_nl: 'Aubergine', name_en: 'Eggplant', category: 'produce', unit: 'stuk', lidl_name: 'Aubergine', lidl_price: 0.99, lidl_unit_size: '1 stuk' },
-  tomaten: { id: '2', name_nl: 'Tomaten (tros)', name_en: 'Tomatoes (vine)', category: 'produce', unit: 'g', lidl_name: 'Trostomaten', lidl_price: 1.49, lidl_unit_size: '500g' },
-  komkommer: { id: '3', name_nl: 'Komkommer', name_en: 'Cucumber', category: 'produce', unit: 'stuk', lidl_name: 'Komkommer', lidl_price: 0.59, lidl_unit_size: '1 stuk' },
-  rode_ui: { id: '4', name_nl: 'Rode ui', name_en: 'Red onion', category: 'produce', unit: 'stuk', lidl_name: 'Rode uien', lidl_price: 0.99, lidl_unit_size: 'net 500g' },
-  ui: { id: '5', name_nl: 'Ui (geel)', name_en: 'Onion (yellow)', category: 'produce', unit: 'stuk', lidl_name: 'Uien', lidl_price: 0.79, lidl_unit_size: 'net 1kg' },
-  knoflook: { id: '6', name_nl: 'Knoflook', name_en: 'Garlic', category: 'produce', unit: 'teen', lidl_name: 'Knoflook', lidl_price: 0.49, lidl_unit_size: '3 stuks' },
-  paprika: { id: '7', name_nl: 'Paprika rood', name_en: 'Red bell pepper', category: 'produce', unit: 'stuk', lidl_name: 'Paprika rood', lidl_price: 0.79, lidl_unit_size: '1 stuk' },
-  spinazie: { id: '8', name_nl: 'Spinazie', name_en: 'Spinach', category: 'produce', unit: 'g', lidl_name: 'Verse spinazie', lidl_price: 0.99, lidl_unit_size: '250g' },
-  courgette: { id: '11', name_nl: 'Courgette', name_en: 'Zucchini', category: 'produce', unit: 'stuk', lidl_name: 'Courgette', lidl_price: 0.79, lidl_unit_size: '1 stuk' },
-  citroen: { id: '12', name_nl: 'Citroen', name_en: 'Lemon', category: 'produce', unit: 'stuk', lidl_name: 'Citroen', lidl_price: 0.39, lidl_unit_size: '1 stuk' },
-  avocado: { id: '13', name_nl: 'Avocado', name_en: 'Avocado', category: 'produce', unit: 'stuk', lidl_name: 'Avocado', lidl_price: 0.89, lidl_unit_size: '1 stuk' },
-  broccoli: { id: '14', name_nl: 'Broccoli', name_en: 'Broccoli', category: 'produce', unit: 'stuk', lidl_name: 'Broccoli', lidl_price: 0.99, lidl_unit_size: '1 stuk' },
-  champignons: { id: '15', name_nl: 'Champignons', name_en: 'Mushrooms', category: 'produce', unit: 'g', lidl_name: 'Champignons', lidl_price: 1.19, lidl_unit_size: '250g' },
-  sla: { id: '16', name_nl: 'Sla (ijsberg)', name_en: 'Lettuce (iceberg)', category: 'produce', unit: 'stuk', lidl_name: 'IJsbergsla', lidl_price: 0.79, lidl_unit_size: '1 stuk' },
-  peterselie: { id: '17', name_nl: 'Peterselie (plat)', name_en: 'Parsley (flat)', category: 'produce', unit: 'bos', lidl_name: 'Peterselie', lidl_price: 0.59, lidl_unit_size: '1 bos' },
-  koriander: { id: '18', name_nl: 'Koriander', name_en: 'Cilantro', category: 'produce', unit: 'bos', lidl_name: 'Koriander', lidl_price: 0.59, lidl_unit_size: '1 bos' },
-  gember: { id: '19', name_nl: 'Gember', name_en: 'Ginger', category: 'produce', unit: 'stuk', lidl_name: 'Gember', lidl_price: 0.49, lidl_unit_size: '1 stuk' },
-  limoen: { id: '20', name_nl: 'Limoen', name_en: 'Lime', category: 'produce', unit: 'stuk', lidl_name: 'Limoen', lidl_price: 0.29, lidl_unit_size: '1 stuk' },
-  wortel: { id: '9', name_nl: 'Wortel', name_en: 'Carrot', category: 'produce', unit: 'stuk', lidl_name: 'Wortelen', lidl_price: 0.69, lidl_unit_size: 'bos' },
-  aardappelen: { id: '10', name_nl: 'Aardappelen', name_en: 'Potatoes', category: 'produce', unit: 'g', lidl_name: 'Kruimige aardappelen', lidl_price: 1.29, lidl_unit_size: '2kg' },
-  eieren: { id: 'e1', name_nl: 'Eieren', name_en: 'Eggs', category: 'dairy', unit: 'stuk', lidl_name: 'Scharreleieren 10st', lidl_price: 1.99, lidl_unit_size: '10 stuks' },
-  kaas: { id: 'e3', name_nl: 'Geraspte kaas', name_en: 'Shredded cheese', category: 'dairy', unit: 'g', lidl_name: 'Geraspte jonge kaas', lidl_price: 1.49, lidl_unit_size: '200g' },
-  boter: { id: 'e4', name_nl: 'Roomboter', name_en: 'Butter', category: 'dairy', unit: 'g', lidl_name: 'Roomboter ongezouten', lidl_price: 1.79, lidl_unit_size: '250g' },
-  creme_fraiche: { id: 'e5', name_nl: 'Crème fraîche', name_en: 'Crème fraîche', category: 'dairy', unit: 'ml', lidl_name: 'Crème fraîche', lidl_price: 0.89, lidl_unit_size: '200ml' },
-  feta: { id: 'e6', name_nl: 'Feta', name_en: 'Feta cheese', category: 'dairy', unit: 'g', lidl_name: 'Feta', lidl_price: 1.49, lidl_unit_size: '200g' },
-  yoghurt: { id: 'e7', name_nl: 'Yoghurt (Grieks)', name_en: 'Greek yogurt', category: 'dairy', unit: 'g', lidl_name: 'Griekse yoghurt', lidl_price: 1.29, lidl_unit_size: '500g' },
-  parmezaan: { id: 'e8', name_nl: 'Parmezaanse kaas', name_en: 'Parmesan cheese', category: 'dairy', unit: 'g', lidl_name: 'Parmigiano Reggiano', lidl_price: 2.49, lidl_unit_size: '100g' },
-  mozzarella: { id: 'e9', name_nl: 'Mozzarella', name_en: 'Mozzarella', category: 'dairy', unit: 'g', lidl_name: 'Mozzarella', lidl_price: 0.89, lidl_unit_size: '125g' },
-  melk: { id: 'e2', name_nl: 'Melk', name_en: 'Milk', category: 'dairy', unit: 'ml', lidl_name: 'Halfvolle melk', lidl_price: 1.09, lidl_unit_size: '1l' },
-  kipfilet: { id: 'm1', name_nl: 'Kipfilet', name_en: 'Chicken breast', category: 'meat', unit: 'g', lidl_name: 'Kipfilet', lidl_price: 4.99, lidl_unit_size: '500g' },
-  gehakt: { id: 'm2', name_nl: 'Gehakt (half-om-half)', name_en: 'Ground beef/pork', category: 'meat', unit: 'g', lidl_name: 'Half-om-half gehakt', lidl_price: 3.49, lidl_unit_size: '500g' },
-  spekblokjes: { id: 'm3', name_nl: 'Spekblokjes', name_en: 'Bacon bits', category: 'meat', unit: 'g', lidl_name: 'Spekblokjes', lidl_price: 1.99, lidl_unit_size: '150g' },
-  garnalen: { id: 'm4', name_nl: 'Garnalen', name_en: 'Shrimp', category: 'meat', unit: 'g', lidl_name: 'Garnalen', lidl_price: 3.99, lidl_unit_size: '200g' },
-  olijfolie: { id: 'p1', name_nl: 'Olijfolie', name_en: 'Olive oil', category: 'pantry', unit: 'el', lidl_name: 'Olijfolie extra vierge', lidl_price: 3.49, lidl_unit_size: '500ml', is_common: true },
-  spaghetti: { id: 'p2', name_nl: 'Spaghetti', name_en: 'Spaghetti', category: 'pantry', unit: 'g', lidl_name: 'Spaghetti', lidl_price: 0.69, lidl_unit_size: '500g' },
-  rijst: { id: 'p3', name_nl: 'Rijst (basmati)', name_en: 'Rice (basmati)', category: 'pantry', unit: 'g', lidl_name: 'Basmatirijst', lidl_price: 1.99, lidl_unit_size: '1kg' },
-  penne: { id: 'p4', name_nl: 'Penne', name_en: 'Penne', category: 'pantry', unit: 'g', lidl_name: 'Penne', lidl_price: 0.69, lidl_unit_size: '500g' },
-  noedels: { id: 'p5', name_nl: 'Noedels (mie)', name_en: 'Noodles (egg)', category: 'pantry', unit: 'g', lidl_name: 'Mie noedels', lidl_price: 0.99, lidl_unit_size: '250g' },
-  pita: { id: 'p6', name_nl: 'Pita broodjes', name_en: 'Pita bread', category: 'bakery', unit: 'stuk', lidl_name: 'Pita broodjes', lidl_price: 0.99, lidl_unit_size: '6 stuks' },
-  kokosmelk: { id: 'p7', name_nl: 'Kokosmelk', name_en: 'Coconut milk', category: 'canned', unit: 'ml', lidl_name: 'Kokosmelk', lidl_price: 0.99, lidl_unit_size: '400ml' },
-  tomatenblokjes: { id: 'p8', name_nl: 'Tomatenblokjes (blik)', name_en: 'Diced tomatoes (can)', category: 'canned', unit: 'ml', lidl_name: 'Tomatenblokjes', lidl_price: 0.59, lidl_unit_size: '400g' },
-  tomatenpuree: { id: 'p9', name_nl: 'Tomatenpuree', name_en: 'Tomato paste', category: 'canned', unit: 'el', lidl_name: 'Tomatenpuree', lidl_price: 0.49, lidl_unit_size: '200g', is_common: true },
-  hummus: { id: 'p10', name_nl: 'Hummus', name_en: 'Hummus', category: 'pantry', unit: 'g', lidl_name: 'Hummus naturel', lidl_price: 1.29, lidl_unit_size: '200g' },
-  tahini: { id: 'p11', name_nl: 'Tahini', name_en: 'Tahini', category: 'pantry', unit: 'el', lidl_name: 'Tahin sesampasta', lidl_price: 2.49, lidl_unit_size: '300g' },
-  sojasaus: { id: 'p12', name_nl: 'Sojasaus', name_en: 'Soy sauce', category: 'pantry', unit: 'el', lidl_name: 'Sojasaus', lidl_price: 1.29, lidl_unit_size: '250ml', is_common: true },
-  vissaus: { id: 'p13', name_nl: 'Vissaus', name_en: 'Fish sauce', category: 'pantry', unit: 'el', lidl_name: 'Vissaus', lidl_price: 1.49, lidl_unit_size: '200ml', is_common: true },
-  pindakaas: { id: 'p14', name_nl: 'Pindakaas', name_en: 'Peanut butter', category: 'pantry', unit: 'el', lidl_name: 'Pindakaas naturel', lidl_price: 1.79, lidl_unit_size: '350g', is_common: true },
-  wraps: { id: 'p15', name_nl: 'Wraps (tortilla)', name_en: 'Tortilla wraps', category: 'bakery', unit: 'stuk', lidl_name: 'Wraps', lidl_price: 1.19, lidl_unit_size: '6 stuks' },
-  komijn: { id: 's3', name_nl: 'Komijn (gemalen)', name_en: 'Cumin (ground)', category: 'spices', unit: 'tl', is_common: true },
-  paprikapoeder: { id: 's4', name_nl: 'Paprikapoeder', name_en: 'Paprika powder', category: 'spices', unit: 'tl', is_common: true },
-  chilivlokken: { id: 's6', name_nl: 'Chilipeper (vlokken)', name_en: 'Chili flakes', category: 'spices', unit: 'tl', is_common: true },
-  oregano: { id: 's7', name_nl: 'Oregano (gedroogd)', name_en: 'Oregano (dried)', category: 'spices', unit: 'tl', is_common: true },
-  peper: { id: 's2', name_nl: 'Peper', name_en: 'Pepper', category: 'spices', unit: 'snuf', is_common: true },
-  // New ingredients for additional recipes
-  zoete_aardappel: { id: '21', name_nl: 'Zoete aardappel', name_en: 'Sweet potato', category: 'produce', unit: 'stuk', lidl_name: 'Zoete aardappel', lidl_price: 0.99, lidl_unit_size: '1 stuk' },
-  kidneybonen: { id: 'c1', name_nl: 'Kidneybonen (blik)', name_en: 'Kidney beans (can)', category: 'canned', unit: 'ml', lidl_name: 'Kidneybonen', lidl_price: 0.69, lidl_unit_size: '400g' },
-  kikkererwten: { id: 'c2', name_nl: 'Kikkererwten (blik)', name_en: 'Chickpeas (can)', category: 'canned', unit: 'ml', lidl_name: 'Kikkererwten', lidl_price: 0.69, lidl_unit_size: '400g' },
-  mais: { id: 'c3', name_nl: 'Mais (blik)', name_en: 'Corn (can)', category: 'canned', unit: 'ml', lidl_name: 'Mais', lidl_price: 0.79, lidl_unit_size: '340g' },
-  rode_linzen: { id: 'c4', name_nl: 'Rode linzen', name_en: 'Red lentils', category: 'pantry', unit: 'g', lidl_name: 'Rode linzen', lidl_price: 1.29, lidl_unit_size: '500g' },
-  naanbrood: { id: 'b2', name_nl: 'Naanbrood', name_en: 'Naan bread', category: 'bakery', unit: 'stuk', lidl_name: 'Naanbrood', lidl_price: 1.29, lidl_unit_size: '2 stuks' },
-  currypasta: { id: 'p16', name_nl: 'Currypasta (groen)', name_en: 'Curry paste (green)', category: 'pantry', unit: 'el', lidl_name: 'Groene currypasta', lidl_price: 1.49, lidl_unit_size: '70g' },
-  lasagnebladen: { id: 'p17', name_nl: 'Lasagnebladen', name_en: 'Lasagna sheets', category: 'pantry', unit: 'g', lidl_name: 'Lasagnebladen', lidl_price: 0.89, lidl_unit_size: '500g' },
-  couscous: { id: 'p18', name_nl: 'Couscous', name_en: 'Couscous', category: 'pantry', unit: 'g', lidl_name: 'Couscous', lidl_price: 0.99, lidl_unit_size: '500g' },
-  tortillachips: { id: 'p19', name_nl: 'Tortillachips', name_en: 'Tortilla chips', category: 'pantry', unit: 'g', lidl_name: 'Tortilla chips', lidl_price: 0.99, lidl_unit_size: '200g' },
-  passata: { id: 'p20', name_nl: 'Passata (tomatensaus)', name_en: 'Passata (tomato sauce)', category: 'canned', unit: 'ml', lidl_name: 'Passata', lidl_price: 0.69, lidl_unit_size: '500ml' },
-  prei: { id: '22', name_nl: 'Prei', name_en: 'Leek', category: 'produce', unit: 'stuk', lidl_name: 'Prei', lidl_price: 0.79, lidl_unit_size: '1 stuk' },
-  bloemkool: { id: '23', name_nl: 'Bloemkool', name_en: 'Cauliflower', category: 'produce', unit: 'stuk', lidl_name: 'Bloemkool', lidl_price: 1.49, lidl_unit_size: '1 stuk' },
-  roomkaas: { id: 'e11', name_nl: 'Roomkaas', name_en: 'Cream cheese', category: 'dairy', unit: 'g', lidl_name: 'Roomkaas naturel', lidl_price: 0.89, lidl_unit_size: '200g' },
-  ricotta: { id: 'e12', name_nl: 'Ricotta', name_en: 'Ricotta', category: 'dairy', unit: 'g', lidl_name: 'Ricotta', lidl_price: 1.29, lidl_unit_size: '250g' },
+  ingredients: Ingredient[];
+  steps: string[];
 };
 
 export const recipes: Recipe[] = [
   {
-    id: '1',
-    title_nl: 'Sabich', title_en: 'Sabich',
-    description_nl: 'Israelisch straateten met gebakken aubergine, hardgekookt ei, hummus en tahini in pitabrood',
-    description_en: 'Israeli street food with fried eggplant, hard-boiled egg, hummus and tahini in pita bread',
-    prep_time: 35, servings: 4, difficulty: 'easy', emoji: '🍆',
-    tags: ['vegetarian', 'budget'], source: { name: 'Traditioneel Israelisch', type: 'traditional' },
-    steps_nl: ['Snijd de aubergine in plakken van 1cm, bestrooi met zout en laat 15 minuten rusten', 'Kook de eieren hard (10 minuten), schrik af en pel', 'Bak de aubergineplakken goudbruin in olijfolie (3-4 min per kant)', 'Snijd tomaat, komkommer en rode ui in kleine blokjes voor Israelische salade', 'Meng de salade met fijngesneden peterselie, citroensap en olijfolie', 'Verwarm de pitabroodjes', 'Bouw de sabich: hummus in de pita, aubergine, ei in plakjes, salade, tahini erover'],
-    steps_en: ['Slice eggplant into 1cm rounds, sprinkle with salt and rest 15 minutes', 'Hard-boil eggs (10 minutes), shock in cold water and peel', 'Fry eggplant slices golden brown in olive oil (3-4 min per side)', 'Dice tomato, cucumber and red onion for Israeli salad', 'Mix salad with chopped parsley, lemon juice and olive oil', 'Warm the pita breads', 'Build the sabich: hummus in pita, eggplant, sliced egg, salad, drizzle tahini'],
+    id: 'one-pot-pasta',
+    title: 'One-pot tomatenpasta',
+    description: 'Snel doordeweeks gerecht met weinig afwas.',
+    prepMinutes: 20,
+    servings: 2,
+    tags: ['snel', 'budget'],
     ingredients: [
-      { ingredient: ingredients.aubergine, amount: 2, unit: 'stuk' },
-      { ingredient: ingredients.eieren, amount: 4, unit: 'stuk', notes_nl: 'hardgekookt', notes_en: 'hard-boiled' },
-      { ingredient: ingredients.tomaten, amount: 200, unit: 'g' },
-      { ingredient: ingredients.komkommer, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.rode_ui, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.peterselie, amount: 1, unit: 'bos', notes_nl: 'fijngesneden', notes_en: 'finely chopped' },
-      { ingredient: ingredients.citroen, amount: 1, unit: 'stuk', notes_nl: 'uitgeperst', notes_en: 'juiced' },
-      { ingredient: ingredients.pita, amount: 4, unit: 'stuk' },
-      { ingredient: ingredients.hummus, amount: 150, unit: 'g' },
-      { ingredient: ingredients.tahini, amount: 3, unit: 'el' },
-      { ingredient: ingredients.olijfolie, amount: 4, unit: 'el', notes_nl: 'om in te bakken', notes_en: 'for frying' },
+      { name: 'Volkoren pasta', amount: '180 g' },
+      { name: 'Tomatenblokjes', amount: '400 g' },
+      { name: 'Ui', amount: '1 stuks' },
+      { name: 'Knoflook', amount: '2 tenen' },
+      { name: 'Spinazie', amount: '150 g' },
+      { name: 'Parmezaan', amount: '30 g' },
+    ],
+    steps: [
+      'Snijd ui en knoflook fijn.',
+      'Bak kort aan in een pan met olijfolie.',
+      'Voeg pasta, tomatenblokjes en 300 ml water toe.',
+      'Laat 12-14 minuten zacht koken en roer af en toe.',
+      'Roer spinazie en Parmezaan erdoor en serveer.',
     ],
   },
   {
-    id: '2',
-    title_nl: 'Shakshuka', title_en: 'Shakshuka',
-    description_nl: 'Gepocheerde eieren in kruidige tomatensaus - perfect voor lunch of avondeten',
-    description_en: 'Poached eggs in spicy tomato sauce - perfect for lunch or dinner',
-    prep_time: 30, servings: 3, difficulty: 'easy', emoji: '🍳',
-    tags: ['vegetarian', 'budget', 'quick'], source: { name: 'Traditioneel Israelisch', type: 'traditional' },
-    steps_nl: ['Verhit olijfolie in een diepe koekenpan, bak de ui en paprika 5 min', 'Voeg knoflook, komijn, paprikapoeder en chilivlokken toe, bak 1 min mee', 'Giet de tomatenblokjes erbij, voeg tomatenpuree toe en laat 10 min inkoken', 'Maak kuiltjes in de saus en breek de eieren erin', 'Deksel erop, laat 5-8 min zachtjes koken tot de eieren gaar zijn', 'Bestrooi met peterselie en serveer met brood'],
-    steps_en: ['Heat olive oil in a deep pan, sauté onion and pepper for 5 min', 'Add garlic, cumin, paprika and chili flakes, cook 1 min', 'Pour in diced tomatoes, add tomato paste and simmer 10 min', 'Make wells in the sauce and crack eggs into them', 'Cover and cook gently 5-8 min until eggs are set', 'Sprinkle with parsley and serve with bread'],
+    id: 'kip-bowl',
+    title: 'Kip rijstbowl',
+    description: 'Meal-prep vriendelijk met veel groenten.',
+    prepMinutes: 25,
+    servings: 2,
+    tags: ['mealprep', 'eiwitrijk'],
     ingredients: [
-      { ingredient: ingredients.ui, amount: 1, unit: 'stuk', notes_nl: 'gesnipperd', notes_en: 'diced' },
-      { ingredient: ingredients.paprika, amount: 1, unit: 'stuk', notes_nl: 'in blokjes', notes_en: 'diced' },
-      { ingredient: ingredients.knoflook, amount: 3, unit: 'teen', notes_nl: 'fijngehakt', notes_en: 'minced' },
-      { ingredient: ingredients.tomatenblokjes, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.tomatenpuree, amount: 1, unit: 'el' },
-      { ingredient: ingredients.eieren, amount: 4, unit: 'stuk' },
-      { ingredient: ingredients.komijn, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.paprikapoeder, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.chilivlokken, amount: 0.5, unit: 'tl' },
-      { ingredient: ingredients.peterselie, amount: 1, unit: 'bos' },
-      { ingredient: ingredients.olijfolie, amount: 2, unit: 'el' },
+      { name: 'Kipdijfilet', amount: '300 g' },
+      { name: 'Zilvervliesrijst', amount: '150 g' },
+      { name: 'Paprika', amount: '1 stuks' },
+      { name: 'Komkommer', amount: '0.5 stuks' },
+      { name: 'Sojasaus', amount: '2 el' },
+      { name: 'Yoghurt', amount: '100 g' },
+    ],
+    steps: [
+      'Kook de rijst volgens verpakking.',
+      'Bak kipreepjes goudbruin en gaar met sojasaus.',
+      'Snijd paprika en komkommer.',
+      'Verdeel rijst, kip en groenten over kommen.',
+      'Werk af met yoghurt-dressing.',
     ],
   },
   {
-    id: '3',
-    title_nl: 'Pasta Carbonara', title_en: 'Pasta Carbonara',
-    description_nl: 'De echte Italiaanse klassieker met spek, ei en Parmezaan - geen room!',
-    description_en: 'The real Italian classic with bacon, egg and Parmesan - no cream!',
-    prep_time: 20, servings: 4, difficulty: 'medium', emoji: '🍝',
-    tags: ['quick'], source: { name: 'La Cucina Italiana', url: 'https://www.lacucinaitaliana.com/italian-heritage/italian-recipes/carbonara', type: 'traditional' },
-    steps_nl: ['Kook de spaghetti volgens de verpakking, bewaar 200ml pastawater', 'Bak de spekblokjes knapperig uit in een droge pan', 'Meng eieren, eigeel, Parmezaan en peper in een kom', 'Giet de pasta af en doe terug in de pan (vuur UIT)', 'Voeg het spek toe, dan het eimengsel en schep snel door', 'Voeg scheutjes pastawater toe tot het romig is', 'Direct serveren met extra Parmezaan en peper'],
-    steps_en: ['Cook spaghetti per package instructions, reserve 200ml pasta water', 'Fry bacon bits crispy in a dry pan', 'Mix eggs, egg yolk, Parmesan and pepper in a bowl', 'Drain pasta and return to pan (heat OFF)', 'Add bacon, then egg mixture and toss quickly', 'Add splashes of pasta water until creamy', 'Serve immediately with extra Parmesan and pepper'],
+    id: 'vega-wraps',
+    title: 'Mexicaanse vega wraps',
+    description: 'Vullend, snel en makkelijk schaalbaar.',
+    prepMinutes: 18,
+    servings: 2,
+    tags: ['vega', 'familie'],
     ingredients: [
-      { ingredient: ingredients.spaghetti, amount: 400, unit: 'g' },
-      { ingredient: ingredients.spekblokjes, amount: 150, unit: 'g' },
-      { ingredient: ingredients.eieren, amount: 3, unit: 'stuk', notes_nl: '+ 1 extra eigeel', notes_en: '+ 1 extra yolk' },
-      { ingredient: ingredients.parmezaan, amount: 80, unit: 'g', notes_nl: 'geraspt', notes_en: 'grated' },
-      { ingredient: ingredients.peper, amount: 1, unit: 'tl', notes_nl: 'flink wat', notes_en: 'generous amount' },
+      { name: 'Tortilla wraps', amount: '4 stuks' },
+      { name: 'Kidneybonen', amount: '240 g' },
+      { name: 'Mais', amount: '150 g' },
+      { name: 'Passata', amount: '250 ml' },
+      { name: 'Ui', amount: '1 stuks' },
+      { name: 'Geraspte kaas', amount: '75 g' },
     ],
-  },
-  {
-    id: '4',
-    title_nl: 'Groene Curry met Kip', title_en: 'Green Curry with Chicken',
-    description_nl: 'Thaise groene curry met kokosmelk, kip en groenten - lekker met rijst',
-    description_en: 'Thai green curry with coconut milk, chicken and vegetables - great with rice',
-    prep_time: 30, servings: 4, difficulty: 'easy', emoji: '🍛',
-    tags: [], source: { name: 'HelloFresh NL', url: 'https://www.hellofresh.nl/recepten', type: 'hellofresh' },
-    steps_nl: ['Zet de rijst op volgens de verpakking', 'Snijd de kip in blokjes, de groenten in reepjes', 'Verhit olie in een wok, bak de kip rondom bruin (5 min)', 'Voeg currypasta toe en bak 1 min mee', 'Giet de kokosmelk erbij, breng aan de kook', 'Voeg de groenten toe en laat 8 min sudderen', 'Breng op smaak met vissaus, limoen en basilicum', 'Serveer over de rijst'],
-    steps_en: ['Cook rice per package instructions', 'Cut chicken into cubes, vegetables into strips', 'Heat oil in a wok, brown chicken all over (5 min)', 'Add curry paste and cook 1 min', 'Pour in coconut milk, bring to a boil', 'Add vegetables and simmer 8 min', 'Season with fish sauce, lime and basil', 'Serve over rice'],
-    ingredients: [
-      { ingredient: ingredients.kipfilet, amount: 500, unit: 'g', notes_nl: 'in blokjes', notes_en: 'cubed' },
-      { ingredient: ingredients.kokosmelk, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.rijst, amount: 300, unit: 'g' },
-      { ingredient: ingredients.paprika, amount: 1, unit: 'stuk', notes_nl: 'in reepjes', notes_en: 'sliced' },
-      { ingredient: ingredients.courgette, amount: 1, unit: 'stuk', notes_nl: 'in halve maantjes', notes_en: 'half-moons' },
-      { ingredient: ingredients.vissaus, amount: 1, unit: 'el' },
-      { ingredient: ingredients.limoen, amount: 1, unit: 'stuk', notes_nl: 'uitgeperst', notes_en: 'juiced' },
-    ],
-  },
-  {
-    id: '5',
-    title_nl: 'Pad Thai', title_en: 'Pad Thai',
-    description_nl: 'Thaise roerbaknoedels met garnalen, pinda en limoen',
-    description_en: 'Thai stir-fried noodles with shrimp, peanut and lime',
-    prep_time: 25, servings: 2, difficulty: 'medium', emoji: '🍜',
-    tags: ['quick'], source: { name: 'HelloFresh NL', url: 'https://www.hellofresh.nl/recepten', type: 'hellofresh' },
-    steps_nl: ['Week de noedels in heet water volgens verpakking', 'Meng sojasaus, vissaus, limoen en suiker voor de saus', 'Verhit olie in een wok, bak de garnalen 2 min, haal eruit', 'Klop de eieren in de wok en roerbak tot net gestold', 'Voeg noedels en saus toe, bak 2 min op hoog vuur', 'Doe de garnalen terug, meng door', 'Serveer met pinda, limoen en koriander'],
-    steps_en: ['Soak noodles in hot water per package', 'Mix soy sauce, fish sauce, lime and sugar for the sauce', 'Heat oil in a wok, cook shrimp 2 min, remove', 'Scramble eggs in the wok until just set', 'Add noodles and sauce, stir-fry 2 min on high heat', 'Return shrimp, toss through', 'Serve with peanuts, lime and cilantro'],
-    ingredients: [
-      { ingredient: ingredients.noedels, amount: 250, unit: 'g' },
-      { ingredient: ingredients.garnalen, amount: 200, unit: 'g' },
-      { ingredient: ingredients.eieren, amount: 2, unit: 'stuk' },
-      { ingredient: ingredients.sojasaus, amount: 2, unit: 'el' },
-      { ingredient: ingredients.vissaus, amount: 1, unit: 'el' },
-      { ingredient: ingredients.limoen, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.pindakaas, amount: 2, unit: 'el', notes_nl: 'grof gehakt als topping', notes_en: 'roughly chopped for topping' },
-      { ingredient: ingredients.koriander, amount: 1, unit: 'bos' },
-    ],
-  },
-  {
-    id: '6',
-    title_nl: 'Courgette-Feta Ovenschotel', title_en: 'Zucchini Feta Bake',
-    description_nl: 'Simpele maar heerlijke ovenschotel met courgette, feta en tomaat',
-    description_en: 'Simple but delicious oven bake with zucchini, feta and tomato',
-    prep_time: 40, servings: 4, difficulty: 'easy', emoji: '🧀',
-    tags: ['vegetarian', 'budget'], source: { name: 'HelloFresh NL', url: 'https://www.hellofresh.nl/recepten', type: 'hellofresh' },
-    steps_nl: ['Verwarm de oven voor op 200 graden', 'Snijd courgettes in plakken, tomaten in parten', 'Leg alles dakpansgewijs in een ovenschaal', 'Verkruimel de feta erover, besprenkel met olijfolie', 'Bestrooi met oregano, zout en peper', 'Bak 25-30 minuten tot goudbruin en zacht'],
-    steps_en: ['Preheat oven to 200C / 400F', 'Slice zucchini into rounds, tomatoes into wedges', 'Layer everything shingled in a baking dish', 'Crumble feta on top, drizzle with olive oil', 'Sprinkle with oregano, salt and pepper', 'Bake 25-30 minutes until golden and tender'],
-    ingredients: [
-      { ingredient: ingredients.courgette, amount: 3, unit: 'stuk', notes_nl: 'in plakken', notes_en: 'sliced' },
-      { ingredient: ingredients.tomaten, amount: 300, unit: 'g', notes_nl: 'in parten', notes_en: 'wedged' },
-      { ingredient: ingredients.feta, amount: 200, unit: 'g', notes_nl: 'verkruimeld', notes_en: 'crumbled' },
-      { ingredient: ingredients.olijfolie, amount: 3, unit: 'el' },
-      { ingredient: ingredients.oregano, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.knoflook, amount: 2, unit: 'teen', notes_nl: 'fijngesneden', notes_en: 'sliced' },
-    ],
-  },
-  {
-    id: '7',
-    title_nl: 'Wraps met Kip en Avocado', title_en: 'Chicken Avocado Wraps',
-    description_nl: 'Snelle doordeweekse wraps met gekruide kip, avocado en frisse salade',
-    description_en: 'Quick weeknight wraps with spiced chicken, avocado and fresh salad',
-    prep_time: 20, servings: 4, difficulty: 'easy', emoji: '🌯',
-    tags: ['quick'], source: { name: 'HelloFresh NL', url: 'https://www.hellofresh.nl/recepten', type: 'hellofresh' },
-    steps_nl: ['Snijd de kipfilet in reepjes, kruid met komijn, paprika, zout en peper', 'Bak de kip goudbruin in olijfolie (6-8 min)', 'Snijd de avocado in plakjes, de tomaat in blokjes', 'Maak een snelle dressing: yoghurt, knoflook, citroensap', 'Verwarm de wraps kort in een droge pan', 'Beleg: dressing, kip, avocado, tomaat, sla'],
-    steps_en: ['Slice chicken into strips, season with cumin, paprika, salt and pepper', 'Cook chicken golden in olive oil (6-8 min)', 'Slice avocado, dice tomato', 'Make quick dressing: yogurt, garlic, lemon juice', 'Warm wraps briefly in a dry pan', 'Assemble: dressing, chicken, avocado, tomato, lettuce'],
-    ingredients: [
-      { ingredient: ingredients.kipfilet, amount: 400, unit: 'g', notes_nl: 'in reepjes', notes_en: 'sliced' },
-      { ingredient: ingredients.wraps, amount: 4, unit: 'stuk' },
-      { ingredient: ingredients.avocado, amount: 2, unit: 'stuk' },
-      { ingredient: ingredients.tomaten, amount: 150, unit: 'g' },
-      { ingredient: ingredients.sla, amount: 0.5, unit: 'stuk' },
-      { ingredient: ingredients.yoghurt, amount: 100, unit: 'g', notes_nl: 'voor dressing', notes_en: 'for dressing' },
-      { ingredient: ingredients.knoflook, amount: 1, unit: 'teen', notes_nl: 'geperst', notes_en: 'pressed' },
-      { ingredient: ingredients.citroen, amount: 0.5, unit: 'stuk' },
-      { ingredient: ingredients.komijn, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.paprikapoeder, amount: 1, unit: 'tl' },
-    ],
-  },
-  {
-    id: '8',
-    title_nl: 'One-Pot Pasta Pomodoro', title_en: 'One-Pot Pasta Pomodoro',
-    description_nl: 'Alles in een pan - pasta in romige tomatensaus met verse spinazie',
-    description_en: 'Everything in one pot - pasta in creamy tomato sauce with fresh spinach',
-    prep_time: 25, servings: 4, difficulty: 'easy', emoji: '🍅',
-    tags: ['vegetarian', 'quick', 'budget'], source: { name: 'HelloFresh NL', url: 'https://www.hellofresh.nl/recepten', type: 'hellofresh' },
-    steps_nl: ['Fruit de ui en knoflook in olijfolie (3 min)', 'Voeg tomatenblokjes, tomatenpuree en 400ml water toe', 'Breng aan de kook, voeg de penne toe', 'Kook 12-14 min met deksel half erop, roer regelmatig', 'Voeg de spinazie toe in de laatste 2 minuten', 'Roer de crème fraîche erdoor, breng op smaak', 'Serveer met Parmezaan'],
-    steps_en: ['Sauté onion and garlic in olive oil (3 min)', 'Add diced tomatoes, tomato paste and 400ml water', 'Bring to boil, add penne', 'Cook 12-14 min with lid half on, stir regularly', 'Add spinach in the last 2 minutes', 'Stir in crème fraîche, season to taste', 'Serve with Parmesan'],
-    ingredients: [
-      { ingredient: ingredients.penne, amount: 400, unit: 'g' },
-      { ingredient: ingredients.tomatenblokjes, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.tomatenpuree, amount: 2, unit: 'el' },
-      { ingredient: ingredients.ui, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.knoflook, amount: 2, unit: 'teen' },
-      { ingredient: ingredients.spinazie, amount: 150, unit: 'g' },
-      { ingredient: ingredients.creme_fraiche, amount: 100, unit: 'ml' },
-      { ingredient: ingredients.parmezaan, amount: 40, unit: 'g', notes_nl: 'geraspt, voor erbij', notes_en: 'grated, for serving' },
-    ],
-  },
-  {
-    id: '9',
-    title_nl: 'Aardappel-Broccoli Schotel', title_en: 'Potato Broccoli Bake',
-    description_nl: 'Comfortfood uit de oven: aardappel en broccoli in kaassaus',
-    description_en: 'Comfort food from the oven: potato and broccoli in cheese sauce',
-    prep_time: 45, servings: 4, difficulty: 'easy', emoji: '🥔',
-    tags: ['vegetarian', 'budget'], source: { name: 'MaaltijdMate Origineel', type: 'original' },
-    steps_nl: ['Verwarm de oven voor op 200 graden', 'Kook de aardappelen in plakken 8 min, voeg broccoli toe voor laatste 3 min', 'Maak kaassaus: smelt boter, roer bloem erdoor, voeg melk toe al roerend', 'Voeg geraspte kaas toe aan de saus en breng op smaak', 'Leg aardappelen en broccoli in ovenschaal, giet kaassaus erover', 'Bestrooi met extra kaas, bak 20 min tot goudbruin'],
-    steps_en: ['Preheat oven to 200C / 400F', 'Boil sliced potatoes 8 min, add broccoli for last 3 min', 'Make cheese sauce: melt butter, stir in flour, gradually add milk', 'Add shredded cheese to sauce and season', 'Layer potatoes and broccoli in baking dish, pour cheese sauce over', 'Top with extra cheese, bake 20 min until golden'],
-    ingredients: [
-      { ingredient: ingredients.aardappelen, amount: 800, unit: 'g', notes_nl: 'in plakken', notes_en: 'sliced' },
-      { ingredient: ingredients.broccoli, amount: 1, unit: 'stuk', notes_nl: 'in roosjes', notes_en: 'in florets' },
-      { ingredient: ingredients.kaas, amount: 150, unit: 'g' },
-      { ingredient: ingredients.boter, amount: 30, unit: 'g' },
-      { ingredient: ingredients.melk, amount: 300, unit: 'ml' },
-    ],
-  },
-  {
-    id: '10',
-    title_nl: 'Champignon Risotto', title_en: 'Mushroom Risotto',
-    description_nl: 'Romige risotto met gebakken champignons en Parmezaan',
-    description_en: 'Creamy risotto with sautéed mushrooms and Parmesan',
-    prep_time: 35, servings: 4, difficulty: 'medium', emoji: '🍄',
-    tags: ['vegetarian'], source: { name: 'HelloFresh NL', url: 'https://www.hellofresh.nl/recepten', type: 'hellofresh' },
-    steps_nl: ['Verwarm 1L bouillon en houd warm op laag vuur', 'Bak de champignons bruin in boter (5 min), haal eruit', 'Fruit de ui in olijfolie, voeg de rijst toe en bak 2 min mee', 'Voeg scheppen bouillon toe, steeds roerend, tot de rijst gaar is (18-20 min)', 'Roer de champignons, boter en Parmezaan erdoor', 'Breng op smaak met zout, peper en eventueel citroen'],
-    steps_en: ['Heat 1L stock and keep warm on low heat', 'Brown mushrooms in butter (5 min), set aside', 'Sauté onion in olive oil, add rice and toast 2 min', 'Add ladles of stock, stirring constantly, until rice is done (18-20 min)', 'Stir in mushrooms, butter and Parmesan', 'Season with salt, pepper and optional lemon'],
-    ingredients: [
-      { ingredient: ingredients.champignons, amount: 400, unit: 'g', notes_nl: 'in plakken', notes_en: 'sliced' },
-      { ingredient: ingredients.rijst, amount: 320, unit: 'g', notes_nl: 'risottorijst', notes_en: 'risotto rice' },
-      { ingredient: ingredients.ui, amount: 1, unit: 'stuk', notes_nl: 'fijngesnipperd', notes_en: 'finely diced' },
-      { ingredient: ingredients.parmezaan, amount: 60, unit: 'g', notes_nl: 'geraspt', notes_en: 'grated' },
-      { ingredient: ingredients.boter, amount: 40, unit: 'g' },
-      { ingredient: ingredients.olijfolie, amount: 2, unit: 'el' },
-    ],
-  },
-  // === NEW RECIPES ===
-  {
-    id: '11',
-    title_nl: 'Chili sin Carne', title_en: 'Chili sin Carne',
-    description_nl: 'Pittige Mexicaanse stoofpot met kidneybonen, mais en paprika - lekker met rijst of nacho\'s',
-    description_en: 'Spicy Mexican stew with kidney beans, corn and peppers - great with rice or nachos',
-    prep_time: 35, servings: 4, difficulty: 'easy', emoji: '🌶️',
-    tags: ['vegetarian', 'vegan', 'budget'], calories_per_serving: 380,
-    source: { name: 'Minimalist Baker', url: 'https://minimalistbaker.com/easy-chili-sin-carne/', type: 'blog' },
-    steps_nl: ['Snipper de ui en knoflook, snijd de paprika in blokjes', 'Fruit de ui in olijfolie (3 min), voeg knoflook, komijn, paprikapoeder en chilivlokken toe', 'Voeg paprika toe en bak 3 min mee', 'Giet tomatenblokjes en kidneybonen (uitgelekt) erbij', 'Voeg mais toe en laat 20 min zachtjes koken', 'Breng op smaak met zout, peper en eventueel extra chili', 'Serveer met rijst, tortillachips of in een wrap'],
-    steps_en: ['Dice onion and garlic, cut pepper into cubes', 'Sauté onion in olive oil (3 min), add garlic, cumin, paprika and chili flakes', 'Add pepper and cook 3 min', 'Pour in diced tomatoes and drained kidney beans', 'Add corn and simmer 20 min', 'Season with salt, pepper and extra chili to taste', 'Serve with rice, tortilla chips or in a wrap'],
-    ingredients: [
-      { ingredient: ingredients.ui, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.knoflook, amount: 3, unit: 'teen' },
-      { ingredient: ingredients.paprika, amount: 2, unit: 'stuk' },
-      { ingredient: ingredients.tomatenblokjes, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.kidneybonen, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.mais, amount: 200, unit: 'ml' },
-      { ingredient: ingredients.rijst, amount: 250, unit: 'g' },
-      { ingredient: ingredients.komijn, amount: 2, unit: 'tl' },
-      { ingredient: ingredients.paprikapoeder, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.chilivlokken, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.olijfolie, amount: 2, unit: 'el' },
-    ],
-  },
-  {
-    id: '12',
-    title_nl: 'Dal (Rode Linzensoep)', title_en: 'Red Lentil Dal',
-    description_nl: 'Romige Indiase linzencurry met kokosmelk en naan - voedzaam en betaalbaar',
-    description_en: 'Creamy Indian lentil curry with coconut milk and naan - nutritious and affordable',
-    prep_time: 30, servings: 4, difficulty: 'easy', emoji: '🍲',
-    tags: ['vegetarian', 'vegan', 'budget'], calories_per_serving: 420,
-    source: { name: 'Rainbow Plant Life', url: 'https://rainbowplantlife.com/vegan-red-lentil-dal/', type: 'blog' },
-    steps_nl: ['Spoel de rode linzen af onder koud water', 'Fruit ui en knoflook in olijfolie (3 min)', 'Voeg gember, kurkuma, komijn en chilivlokken toe, bak 1 min', 'Voeg linzen, kokosmelk en 400ml water toe', 'Breng aan de kook en laat 18-20 min zachtjes koken tot romig', 'Roer er spinazie doorheen in de laatste 2 minuten', 'Serveer met naanbrood en een scheutje citroen'],
-    steps_en: ['Rinse red lentils under cold water', 'Sauté onion and garlic in olive oil (3 min)', 'Add ginger, turmeric, cumin and chili flakes, cook 1 min', 'Add lentils, coconut milk and 400ml water', 'Bring to boil and simmer 18-20 min until creamy', 'Stir in spinach in the last 2 minutes', 'Serve with naan bread and a squeeze of lemon'],
-    ingredients: [
-      { ingredient: ingredients.rode_linzen, amount: 250, unit: 'g' },
-      { ingredient: ingredients.kokosmelk, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.ui, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.knoflook, amount: 3, unit: 'teen' },
-      { ingredient: ingredients.gember, amount: 1, unit: 'stuk', notes_nl: '2cm geraspt', notes_en: '2cm grated' },
-      { ingredient: ingredients.spinazie, amount: 150, unit: 'g' },
-      { ingredient: ingredients.naanbrood, amount: 4, unit: 'stuk' },
-      { ingredient: ingredients.citroen, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.olijfolie, amount: 2, unit: 'el' },
-    ],
-  },
-  {
-    id: '13',
-    title_nl: 'Griekse Salade met Feta en Orzo', title_en: 'Greek Salad with Feta and Orzo',
-    description_nl: 'Frisse mediterrane pastasalade met feta, olijven, tomaat en komkommer',
-    description_en: 'Fresh Mediterranean pasta salad with feta, olives, tomato and cucumber',
-    prep_time: 20, servings: 4, difficulty: 'easy', emoji: '🥗',
-    tags: ['vegetarian', 'quick'], calories_per_serving: 450,
-    source: { name: 'HelloFresh NL', url: 'https://www.hellofresh.nl/recepten/griekse-orzo-salade', type: 'hellofresh' },
-    steps_nl: ['Kook de orzo/penne al dente, giet af en laat afkoelen', 'Snijd tomaten in partjes, komkommer in halve plakjes, rode ui in dunne ringen', 'Maak dressing: olijfolie, citroensap, oregano, zout en peper', 'Meng pasta met groenten en dressing', 'Verkruimel feta erover', 'Garneer met verse peterselie'],
-    steps_en: ['Cook orzo/penne al dente, drain and let cool', 'Cut tomatoes into wedges, cucumber into half-moons, red onion into thin rings', 'Make dressing: olive oil, lemon juice, oregano, salt and pepper', 'Toss pasta with vegetables and dressing', 'Crumble feta on top', 'Garnish with fresh parsley'],
-    ingredients: [
-      { ingredient: ingredients.penne, amount: 300, unit: 'g', notes_nl: 'of orzo', notes_en: 'or orzo' },
-      { ingredient: ingredients.feta, amount: 200, unit: 'g' },
-      { ingredient: ingredients.tomaten, amount: 250, unit: 'g' },
-      { ingredient: ingredients.komkommer, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.rode_ui, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.citroen, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.peterselie, amount: 1, unit: 'bos' },
-      { ingredient: ingredients.oregano, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.olijfolie, amount: 4, unit: 'el' },
-    ],
-  },
-  {
-    id: '14',
-    title_nl: 'Zoete Aardappel Curry', title_en: 'Sweet Potato Curry',
-    description_nl: 'Snelle en voedzame curry met zoete aardappel, kikkererwten en spinazie',
-    description_en: 'Quick and nutritious curry with sweet potato, chickpeas and spinach',
-    prep_time: 30, servings: 4, difficulty: 'easy', emoji: '🍠',
-    tags: ['vegetarian', 'vegan', 'budget'], calories_per_serving: 390,
-    source: { name: 'HelloFresh NL', url: 'https://www.hellofresh.nl/recepten/zoete-aardappelcurry', type: 'hellofresh' },
-    steps_nl: ['Schil de zoete aardappel en snijd in blokjes van 2cm', 'Fruit ui en knoflook in olijfolie (3 min)', 'Voeg currypasta toe en bak 1 min', 'Voeg zoete aardappel toe en bak 3 min mee', 'Giet kokosmelk erbij en laat 15 min sudderen tot de aardappel gaar is', 'Voeg kikkererwten (uitgelekt) en spinazie toe, kook nog 3 min', 'Serveer met rijst en een scheutje limoen'],
-    steps_en: ['Peel sweet potato and cut into 2cm cubes', 'Sauté onion and garlic in olive oil (3 min)', 'Add curry paste and cook 1 min', 'Add sweet potato and cook 3 min', 'Pour in coconut milk and simmer 15 min until potato is tender', 'Add drained chickpeas and spinach, cook 3 min more', 'Serve with rice and a squeeze of lime'],
-    ingredients: [
-      { ingredient: ingredients.zoete_aardappel, amount: 2, unit: 'stuk', notes_nl: 'in blokjes', notes_en: 'cubed' },
-      { ingredient: ingredients.kikkererwten, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.kokosmelk, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.spinazie, amount: 150, unit: 'g' },
-      { ingredient: ingredients.ui, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.knoflook, amount: 2, unit: 'teen' },
-      { ingredient: ingredients.currypasta, amount: 2, unit: 'el' },
-      { ingredient: ingredients.rijst, amount: 250, unit: 'g' },
-      { ingredient: ingredients.limoen, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.olijfolie, amount: 1, unit: 'el' },
-    ],
-  },
-  {
-    id: '15',
-    title_nl: 'Spaghetti Bolognese', title_en: 'Spaghetti Bolognese',
-    description_nl: 'De ultieme klassieker - langzaam gegaarde vleessaus met verse groenten',
-    description_en: 'The ultimate classic - slow-simmered meat sauce with fresh vegetables',
-    prep_time: 40, servings: 4, difficulty: 'easy', emoji: '🍝',
-    tags: [], calories_per_serving: 580,
-    source: { name: 'Donna Hay', url: 'https://www.donnahay.com.au/recipes/mains/spaghetti-bolognese', type: 'book' },
-    steps_nl: ['Snipper ui, wortel en knoflook fijn', 'Verhit olijfolie en bak het gehakt rul en bruin (5 min)', 'Voeg de groenten toe en bak 5 min mee', 'Voeg tomatenpuree toe en bak 1 min', 'Giet passata en tomatenblokjes erbij', 'Laat minstens 20 min zachtjes pruttelen', 'Kook ondertussen de spaghetti al dente', 'Breng de saus op smaak en serveer over de pasta met Parmezaan'],
-    steps_en: ['Finely dice onion, carrot and garlic', 'Heat olive oil and brown the ground meat (5 min)', 'Add vegetables and cook 5 min', 'Add tomato paste and cook 1 min', 'Pour in passata and diced tomatoes', 'Simmer at least 20 min on low heat', 'Meanwhile cook spaghetti al dente', 'Season sauce and serve over pasta with Parmesan'],
-    ingredients: [
-      { ingredient: ingredients.spaghetti, amount: 400, unit: 'g' },
-      { ingredient: ingredients.gehakt, amount: 500, unit: 'g' },
-      { ingredient: ingredients.ui, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.wortel, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.knoflook, amount: 2, unit: 'teen' },
-      { ingredient: ingredients.passata, amount: 500, unit: 'ml' },
-      { ingredient: ingredients.tomatenblokjes, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.tomatenpuree, amount: 2, unit: 'el' },
-      { ingredient: ingredients.parmezaan, amount: 40, unit: 'g' },
-      { ingredient: ingredients.olijfolie, amount: 2, unit: 'el' },
-    ],
-  },
-  {
-    id: '16',
-    title_nl: 'Kip Teriyaki Bowl', title_en: 'Chicken Teriyaki Bowl',
-    description_nl: 'Japanse rijstbowl met sticky teriyaki kip, broccoli en sesam',
-    description_en: 'Japanese rice bowl with sticky teriyaki chicken, broccoli and sesame',
-    prep_time: 25, servings: 2, difficulty: 'easy', emoji: '🍚',
-    tags: ['quick'], calories_per_serving: 520,
-    source: { name: 'HelloFresh NL', url: 'https://www.hellofresh.nl/recepten/kip-teriyaki-bowl', type: 'hellofresh' },
-    steps_nl: ['Zet de rijst op', 'Snijd de kipfilet in reepjes', 'Bak de kip goudbruin in olie (5 min)', 'Voeg sojasaus en honing toe, laat karamelliseren (2 min)', 'Stoom of kook de broccoli beetgaar (4 min)', 'Bouw de bowl: rijst, kip met saus, broccoli', 'Garneer met sesam en lente-ui'],
-    steps_en: ['Cook rice', 'Slice chicken into strips', 'Pan-fry chicken golden (5 min)', 'Add soy sauce and honey, let caramelize (2 min)', 'Steam or boil broccoli until tender-crisp (4 min)', 'Build bowl: rice, chicken with sauce, broccoli', 'Garnish with sesame and spring onion'],
-    ingredients: [
-      { ingredient: ingredients.kipfilet, amount: 300, unit: 'g', notes_nl: 'in reepjes', notes_en: 'sliced' },
-      { ingredient: ingredients.rijst, amount: 200, unit: 'g' },
-      { ingredient: ingredients.broccoli, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.sojasaus, amount: 3, unit: 'el' },
-      { ingredient: ingredients.olijfolie, amount: 1, unit: 'el' },
-    ],
-  },
-  {
-    id: '17',
-    title_nl: 'Couscous met Geroosterde Groenten', title_en: 'Couscous with Roasted Vegetables',
-    description_nl: 'Midden-Oosterse couscous met geroosterde groenten, feta en munt',
-    description_en: 'Middle Eastern couscous with roasted vegetables, feta and mint',
-    prep_time: 35, servings: 4, difficulty: 'easy', emoji: '🫓',
-    tags: ['vegetarian'], calories_per_serving: 430,
-    source: { name: 'Ottolenghi - Simple', url: 'https://ottolenghi.co.uk/recipes/couscous', type: 'book' },
-    steps_nl: ['Verwarm de oven voor op 200 graden', 'Snijd courgette, paprika en rode ui in grove stukken', 'Besprenkel met olijfolie, komijn en zout, rooster 25 min', 'Bereid couscous volgens verpakking met heet water en olijfolie', 'Pluk de couscous los met een vork', 'Meng de geroosterde groenten door de couscous', 'Top met verkruimelde feta, peterselie en een scheutje citroen'],
-    steps_en: ['Preheat oven to 200C / 400F', 'Cut zucchini, pepper and red onion into rough chunks', 'Drizzle with olive oil, cumin and salt, roast 25 min', 'Prepare couscous with hot water and olive oil per package', 'Fluff couscous with a fork', 'Toss roasted vegetables through the couscous', 'Top with crumbled feta, parsley and a squeeze of lemon'],
-    ingredients: [
-      { ingredient: ingredients.couscous, amount: 250, unit: 'g' },
-      { ingredient: ingredients.courgette, amount: 2, unit: 'stuk' },
-      { ingredient: ingredients.paprika, amount: 2, unit: 'stuk' },
-      { ingredient: ingredients.rode_ui, amount: 2, unit: 'stuk' },
-      { ingredient: ingredients.feta, amount: 150, unit: 'g' },
-      { ingredient: ingredients.peterselie, amount: 1, unit: 'bos' },
-      { ingredient: ingredients.citroen, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.komijn, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.olijfolie, amount: 4, unit: 'el' },
-    ],
-  },
-  {
-    id: '18',
-    title_nl: 'Lasagne', title_en: 'Lasagna',
-    description_nl: 'Klassieke Italiaanse lasagne met gehakt, bechamelsaus en drie soorten kaas',
-    description_en: 'Classic Italian lasagna with ground meat, béchamel and three cheeses',
-    prep_time: 60, servings: 6, difficulty: 'medium', emoji: '🧱',
-    tags: [], calories_per_serving: 620,
-    source: { name: 'Bon Appétit', url: 'https://www.bonappetit.com/recipe/classic-lasagna', type: 'blog' },
-    steps_nl: ['Maak de vleessaus: bak gehakt met ui en knoflook, voeg passata en tomatenpuree toe, laat 20 min sudderen', 'Maak bechamelsaus: smelt boter, roer bloem erdoor, voeg geleidelijk melk toe al roerend', 'Voeg geraspte kaas toe aan de bechamel', 'Verwarm oven voor op 180 graden', 'Laag in ovenschaal: saus, lasagnebladen, bechamel, herhaal 3x', 'Top met extra kaas en mozzarella', 'Bak 35-40 min tot goudbruin en borrelend', 'Laat 10 min rusten voor het snijden'],
-    steps_en: ['Make meat sauce: brown ground meat with onion and garlic, add passata and tomato paste, simmer 20 min', 'Make béchamel: melt butter, stir in flour, gradually add milk while stirring', 'Add shredded cheese to béchamel', 'Preheat oven to 180C / 350F', 'Layer in baking dish: sauce, lasagna sheets, béchamel, repeat 3x', 'Top with extra cheese and mozzarella', 'Bake 35-40 min until golden and bubbling', 'Rest 10 min before cutting'],
-    ingredients: [
-      { ingredient: ingredients.lasagnebladen, amount: 250, unit: 'g' },
-      { ingredient: ingredients.gehakt, amount: 500, unit: 'g' },
-      { ingredient: ingredients.passata, amount: 500, unit: 'ml' },
-      { ingredient: ingredients.tomatenpuree, amount: 2, unit: 'el' },
-      { ingredient: ingredients.ui, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.knoflook, amount: 2, unit: 'teen' },
-      { ingredient: ingredients.kaas, amount: 200, unit: 'g' },
-      { ingredient: ingredients.mozzarella, amount: 125, unit: 'g' },
-      { ingredient: ingredients.boter, amount: 40, unit: 'g' },
-      { ingredient: ingredients.melk, amount: 500, unit: 'ml' },
-      { ingredient: ingredients.olijfolie, amount: 1, unit: 'el' },
-    ],
-  },
-  {
-    id: '19',
-    title_nl: 'Bloemkool Tikka Masala', title_en: 'Cauliflower Tikka Masala',
-    description_nl: 'Geroosterde bloemkool in romige tikka masala saus met rijst en naan',
-    description_en: 'Roasted cauliflower in creamy tikka masala sauce with rice and naan',
-    prep_time: 40, servings: 4, difficulty: 'easy', emoji: '🫕',
-    tags: ['vegetarian'], calories_per_serving: 460,
-    source: { name: 'Budget Bytes', url: 'https://www.budgetbytes.com/cauliflower-tikka-masala/', type: 'blog' },
-    steps_nl: ['Verwarm oven voor op 220 graden', 'Verdeel bloemkool in roosjes, meng met olie, komijn en paprikapoeder', 'Rooster 20 min tot goudbruin', 'Maak de saus: fruit ui en knoflook, voeg tomatenpuree, tomatenblokjes en kokosmelk toe', 'Laat 10 min sudderen, voeg de geroosterde bloemkool toe', 'Kook rijst en verwarm naanbrood', 'Serveer met rijst, naan en verse koriander'],
-    steps_en: ['Preheat oven to 220C / 425F', 'Break cauliflower into florets, toss with oil, cumin and paprika', 'Roast 20 min until golden', 'Make sauce: sauté onion and garlic, add tomato paste, diced tomatoes and coconut milk', 'Simmer 10 min, add roasted cauliflower', 'Cook rice and warm naan bread', 'Serve with rice, naan and fresh cilantro'],
-    ingredients: [
-      { ingredient: ingredients.bloemkool, amount: 1, unit: 'stuk', notes_nl: 'in roosjes', notes_en: 'in florets' },
-      { ingredient: ingredients.kokosmelk, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.tomatenblokjes, amount: 400, unit: 'ml' },
-      { ingredient: ingredients.tomatenpuree, amount: 2, unit: 'el' },
-      { ingredient: ingredients.ui, amount: 1, unit: 'stuk' },
-      { ingredient: ingredients.knoflook, amount: 3, unit: 'teen' },
-      { ingredient: ingredients.rijst, amount: 250, unit: 'g' },
-      { ingredient: ingredients.naanbrood, amount: 4, unit: 'stuk' },
-      { ingredient: ingredients.koriander, amount: 1, unit: 'bos' },
-      { ingredient: ingredients.komijn, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.paprikapoeder, amount: 1, unit: 'tl' },
-      { ingredient: ingredients.olijfolie, amount: 2, unit: 'el' },
-    ],
-  },
-  {
-    id: '20',
-    title_nl: 'Caprese Panini met Pesto', title_en: 'Caprese Panini with Pesto',
-    description_nl: 'Warme Italiaanse tosti met mozzarella, tomaat en verse pesto - klaar in 15 min',
-    description_en: 'Warm Italian pressed sandwich with mozzarella, tomato and fresh pesto - ready in 15 min',
-    prep_time: 15, servings: 2, difficulty: 'easy', emoji: '🥪',
-    tags: ['vegetarian', 'quick'], calories_per_serving: 480,
-    source: { name: 'MaaltijdMate Origineel', type: 'original' },
-    steps_nl: ['Snijd de mozzarella in plakken, de tomaat in plakjes', 'Halveer de broodjes of gebruik ciabatta', 'Besmeer met pesto (of roomkaas)', 'Beleg met mozzarella, tomaat en eventueel rucola', 'Bak in een grillpan of contactgrill tot het brood knapperig is en de kaas smelt', 'Besprenkel met olijfolie en bestrooi met peper'],
-    steps_en: ['Slice mozzarella and tomato', 'Halve the rolls or use ciabatta', 'Spread with pesto (or cream cheese)', 'Layer with mozzarella, tomato and optional arugula', 'Cook in a grill pan or press until bread is crispy and cheese melts', 'Drizzle with olive oil and sprinkle with pepper'],
-    ingredients: [
-      { ingredient: ingredients.mozzarella, amount: 250, unit: 'g' },
-      { ingredient: ingredients.tomaten, amount: 200, unit: 'g' },
-      { ingredient: ingredients.roomkaas, amount: 50, unit: 'g', notes_nl: 'of pesto', notes_en: 'or pesto' },
-      { ingredient: ingredients.olijfolie, amount: 1, unit: 'el' },
+    steps: [
+      'Fruit ui in een koekenpan.',
+      'Voeg bonen, mais en passata toe en verwarm 8 minuten.',
+      'Warm wraps kort op.',
+      'Vul wraps met bonenmengsel en kaas.',
+      'Vouw dicht en serveer.',
     ],
   },
 ];
 
-export function getRecipe(id: string): Recipe | undefined {
-  return recipes.find(r => r.id === id);
+export const weekTemplate = [
+  { day: 'Maandag', recipeId: 'one-pot-pasta' },
+  { day: 'Dinsdag', recipeId: 'kip-bowl' },
+  { day: 'Woensdag', recipeId: 'vega-wraps' },
+  { day: 'Donderdag', recipeId: 'one-pot-pasta' },
+  { day: 'Vrijdag', recipeId: 'kip-bowl' },
+];
+
+export function getRecipeById(id: string) {
+  return recipes.find((r) => r.id === id);
 }
 
-export function estimateCost(recipe: Recipe): number {
-  return recipe.ingredients.reduce((total, ri) => {
-    if (ri.ingredient.lidl_price && !ri.ingredient.is_common) {
-      return total + ri.ingredient.lidl_price;
+export function getShoppingItemsFromWeek() {
+  const totals = new Map<string, string[]>();
+
+  for (const day of weekTemplate) {
+    const recipe = getRecipeById(day.recipeId);
+    if (!recipe) continue;
+
+    for (const item of recipe.ingredients) {
+      const current = totals.get(item.name) ?? [];
+      current.push(item.amount);
+      totals.set(item.name, current);
     }
-    return total;
-  }, 0);
+  }
+
+  return Array.from(totals.entries()).map(([name, amounts]) => ({
+    name,
+    note: amounts.join(' + '),
+  }));
 }
