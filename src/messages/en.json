@@ -98,6 +98,8 @@
     "title": "System Settings",
     "syncTitle": "iCal Sync",
     "syncSubtitle": "Export this week only, or your full multi-year plan.",
+    "remoteReady": "Live sync enabled: stable personal feed URL is available.",
+    "remoteFallback": "Local mode active: login + Supabase env required for stable personal feed.",
     "shoppingMoment": "Shopping moment (this week)",
     "weekFeed": "Feed URL (this week)",
     "allFeed": "Feed URL (all planned weeks)",

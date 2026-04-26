@@ -7,12 +7,23 @@ import {
   defaultPlannerState,
   type PlannerState,
 } from './planner';
+import {
+  getOrCreateFeedToken,
+  getSignedInUserId,
+  loadRemoteWeeks,
+  mergeRemoteIntoState,
+  saveRemoteWeek,
+} from './remotePlanner';
 
 const STORAGE_KEY = 'bio-weekplanner-state-v2';
 
 export function usePlannerState() {
   const [state, setState] = useState<PlannerState>(defaultPlannerState);
   const [isReady, setIsReady] = useState(false);
+
+  const [remoteStatus, setRemoteStatus] = useState<'idle' | 'guest' | 'syncing' | 'ready' | 'error'>('idle');
+  const [remoteUserId, setRemoteUserId] = useState<string | null>(null);
+  const [remoteFeedToken, setRemoteFeedToken] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -26,6 +37,44 @@ export function usePlannerState() {
       setIsReady(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    let cancelled = false;
+
+    async function initRemote() {
+      const userId = await getSignedInUserId();
+      if (!userId) {
+        if (!cancelled) setRemoteStatus('guest');
+        return;
+      }
+
+      if (cancelled) return;
+      setRemoteStatus('syncing');
+      setRemoteUserId(userId);
+
+      const token = await getOrCreateFeedToken(userId);
+      if (!cancelled) setRemoteFeedToken(token);
+
+      const remote = await loadRemoteWeeks(userId);
+      if (remote.error) {
+        if (!cancelled) setRemoteStatus('error');
+        return;
+      }
+
+      if (!cancelled) {
+        setState((prev) => mergeRemoteIntoState(prev, remote.rows));
+        setRemoteStatus('ready');
+      }
+    }
+
+    initRemote();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isReady]);
 
   function update(next: PlannerState) {
     setState(next);
@@ -41,6 +90,22 @@ export function usePlannerState() {
   const checkedItems = state.checkedItemsByWeek[selectedWeekKey] ?? [];
   const shoppingMoment = state.shoppingMomentByWeek[selectedWeekKey] ?? '';
 
+  useEffect(() => {
+    if (!isReady || remoteStatus !== 'ready' || !remoteUserId) return;
+
+    const timer = setTimeout(() => {
+      saveRemoteWeek({
+        userId: remoteUserId,
+        weekKey: selectedWeekKey,
+        people: state.people,
+        shoppingMoment,
+        assignments: weekAssignments,
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [isReady, remoteStatus, remoteUserId, selectedWeekKey, shoppingMoment, weekAssignments, state.people]);
+
   function setCurrentWeekKey(weekKey: string) {
     patch({ currentWeekKey: weekKey });
   }
@@ -53,7 +118,7 @@ export function usePlannerState() {
     patch({ people: Math.max(1, people) });
   }
 
-  function setAssignment(day: keyof typeof weekAssignments | string, recipeId?: string) {
+  function setAssignment(day: string, recipeId?: string) {
     const nextWeekAssignments = {
       ...weekAssignments,
       [day]: recipeId || undefined,
@@ -145,5 +210,7 @@ export function usePlannerState() {
     setShoppingMoment,
     toggleCheckedItem,
     resetCheckedItems,
+    remoteStatus,
+    remoteFeedToken,
   };
 }

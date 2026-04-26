@@ -98,6 +98,8 @@
     "title": "System Settings",
     "syncTitle": "iCal Sync",
     "syncSubtitle": "Exporteer alleen deze week of je volledige meerjarenplanning.",
+    "remoteReady": "Live sync actief: stabiele persoonlijke feed URL beschikbaar.",
+    "remoteFallback": "Lokale modus actief: log in + Supabase env nodig voor stabiele persoonlijke feed.",
     "shoppingMoment": "Boodschappenmoment (deze week)",
     "weekFeed": "Feed URL (deze week)",
     "allFeed": "Feed URL (alle geplande weken)",

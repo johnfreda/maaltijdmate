@@ -7,20 +7,31 @@ import { useTranslations } from 'next-intl';
 
 export default function AgendaPage() {
   const t = useTranslations('agenda');
-  const { state, isReady, selectedWeekKey, shoppingMoment, setShoppingMoment, stepWeek } = usePlannerState();
+  const {
+    state,
+    isReady,
+    selectedWeekKey,
+    shoppingMoment,
+    setShoppingMoment,
+    stepWeek,
+    remoteStatus,
+    remoteFeedToken,
+  } = usePlannerState();
   const [copied, setCopied] = useState(false);
 
   const encodedState = useMemo(() => encodeURIComponent(JSON.stringify(state)), [state]);
 
   const feedUrlWeek = useMemo(() => {
     if (typeof window === 'undefined') return '';
+    if (remoteFeedToken) return `${window.location.origin}/api/ical/feed/${remoteFeedToken}?week=${selectedWeekKey}`;
     return `${window.location.origin}/api/ical?s=${encodedState}&week=${selectedWeekKey}`;
-  }, [encodedState, selectedWeekKey]);
+  }, [encodedState, selectedWeekKey, remoteFeedToken]);
 
   const feedUrlAll = useMemo(() => {
     if (typeof window === 'undefined') return '';
+    if (remoteFeedToken) return `${window.location.origin}/api/ical/feed/${remoteFeedToken}`;
     return `${window.location.origin}/api/ical?s=${encodedState}&all=1`;
-  }, [encodedState]);
+  }, [encodedState, remoteFeedToken]);
 
   if (!isReady) return <div className="p-6">{t('loading')}</div>;
 
@@ -68,6 +79,9 @@ export default function AgendaPage() {
       <section className="mt-6 rounded-2xl border border-[#d6ddc8] bg-[#dfe8cf] p-5">
         <h2 className="display-serif text-3xl">{t('syncTitle')}</h2>
         <p className="mt-2 text-sm text-[#4d584a]">{t('syncSubtitle')}</p>
+        <p className="mt-2 text-xs text-[#5c6756]">
+          {remoteStatus === 'ready' ? t('remoteReady') : t('remoteFallback')}
+        </p>
 
         <label className="mt-4 block text-sm font-medium">{t('shoppingMoment')}</label>
         <input
