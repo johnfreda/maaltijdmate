@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  --font-display: "Playfair Display", Georgia, serif;
   --color-primary: #16a34a;
   --color-primary-light: #22c55e;
   --color-primary-dark: #15803d;
@@ -8,6 +9,11 @@
   --color-accent-light: #fbbf24;
   --color-warm-bg: #fef3c7;
   --color-warm-bg-light: #fffbeb;
+}
+
+.display-serif {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
 
 /* Premium glass morphism effect */
